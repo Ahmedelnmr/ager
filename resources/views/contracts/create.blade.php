@@ -3,8 +3,7 @@
 @section('page-title', 'إنشاء عقد إيجار جديد')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.rtl.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <style>
 .wizard-step { display:none; }
 .wizard-step.active { display:block; }
@@ -251,52 +250,53 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 <script>
-$(document).ready(function () {
-    // Select2 for tenant
-    $('#tenantSelect').select2({
-        theme: 'bootstrap-5',
-        placeholder: 'ابحث باسم المستأجر أو رقم الهوية...',
-        language: 'ar',
-        width: '100%',
-        dir: 'rtl',
-    });
-
-    // Building → Unit cascading filter
-    $('#buildingFilter').on('change', function () {
-        const bid = $(this).val();
-        $('#unitSelect option').each(function () {
-            const ob = $(this).data('building');
-            if (!bid || String(ob) === String(bid) || !ob) {
-                $(this).show().prop('disabled', false);
-            } else {
-                $(this).hide().prop('disabled', true);
-            }
-        });
-        $('#unitSelect').val('').trigger('change');
-        $('#unitRentHint').text('');
-    });
-
-    // Hint on unit select
-    $('#unitSelect').on('change', function () {
-        const rent = $(this).find(':selected').data('rent');
-        if (rent) {
-            $('#unitRentHint').text('الإيجار الأساسي للوحدة: ' + Number(rent).toLocaleString('ar-EG') + ' ج.م');
-            $('#baseRentInput').val(rent);
-        }
-    });
-
-    // Partial refund toggle
-    $('#depositPolicySelect').on('change', function () {
-        if ($(this).val() === 'partial') {
-            $('#partialRefundBox').show();
-        } else {
-            $('#partialRefundBox').hide();
-        }
-    });
+// ── Choices.js for tenant searchable select ──────────────────
+const tenantChoices = new Choices(document.getElementById('tenantSelect'), {
+    searchEnabled: true,
+    searchPlaceholderValue: 'ابحث باسم المستأجر أو رقم الهوية...',
+    noResultsText: 'لا توجد نتائج',
+    noChoicesText: 'لا يوجد مستأجرون',
+    itemSelectText: 'اختر',
+    shouldSort: false,
+    allowHTML: false,
 });
 
+// ── Building → Unit cascading filter ─────────────────────────
+document.getElementById('buildingFilter').addEventListener('change', function () {
+    const bid = this.value;
+    const sel = document.getElementById('unitSelect');
+    Array.from(sel.options).forEach(opt => {
+        if (!opt.value) return; // placeholder
+        const ob = opt.dataset.building;
+        const hide = bid && String(ob) !== String(bid);
+        opt.hidden   = hide;
+        opt.disabled = hide;
+    });
+    sel.value = '';
+    document.getElementById('unitRentHint').textContent = '';
+    document.getElementById('baseRentInput').value = '';
+});
+
+// ── Hint on unit select ───────────────────────────────────────
+document.getElementById('unitSelect').addEventListener('change', function () {
+    const opt  = this.options[this.selectedIndex];
+    const rent = opt?.dataset.rent;
+    if (rent) {
+        document.getElementById('unitRentHint').textContent =
+            'الإيجار الأساسي للوحدة: ' + Number(rent).toLocaleString('ar-EG') + ' ج.م';
+        document.getElementById('baseRentInput').value = rent;
+    }
+});
+
+// ── Partial refund toggle ─────────────────────────────────────
+document.getElementById('depositPolicySelect').addEventListener('change', function () {
+    document.getElementById('partialRefundBox').style.display =
+        this.value === 'partial' ? 'block' : 'none';
+});
+
+// ── Wizard step navigation ────────────────────────────────────
 let currentStep = 1;
 const totalSteps = 6;
 
@@ -318,19 +318,22 @@ function changeStep(dir) {
 }
 
 function updateReview() {
-    const form = document.getElementById('contractForm');
-    const get = (n) => form.querySelector(`[name="${n}"]`)?.value ?? '—';
-    const getLabel = (n) => {
+    const form     = document.getElementById('contractForm');
+    const get      = n => form.querySelector(`[name="${n}"]`)?.value ?? '—';
+    const getLabel = n => {
         const el = form.querySelector(`[name="${n}"]`);
         return el?.options?.[el.selectedIndex]?.text ?? el?.value ?? '—';
     };
-
+    const baseRent   = Number(get('base_rent')   || 0).toLocaleString('ar-EG');
     const depositAmt = Number(get('security_deposit_amount') || 0).toLocaleString('ar-EG');
-    const baseRent   = Number(get('base_rent') || 0).toLocaleString('ar-EG');
+
+    // Get tenant label from Choices if available
+    let tenantLabel = '—';
+    try { tenantLabel = tenantChoices.getValue(true) ? tenantChoices.getValue()?.label ?? '—' : '—'; } catch(e) {}
 
     document.getElementById('review-summary').innerHTML = `
         <div class="row g-2 small">
-            <div class="col-6"><strong>المستأجر:</strong> ${getLabel('tenant_id')}</div>
+            <div class="col-6"><strong>المستأجر:</strong> ${tenantLabel}</div>
             <div class="col-6"><strong>الوحدة:</strong> ${getLabel('unit_id')}</div>
             <div class="col-6"><strong>تاريخ البداية:</strong> ${get('start_date')}</div>
             <div class="col-6"><strong>تاريخ النهاية:</strong> ${get('end_date')}</div>

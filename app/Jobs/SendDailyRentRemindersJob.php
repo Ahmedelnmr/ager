@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Models\Contract;
 use App\Models\RentSchedule;
 use App\Services\NotificationService;
 use Carbon\Carbon;
@@ -11,62 +10,63 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 
 class SendDailyRentRemindersJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(protected NotificationService $notificationService) {}
+    public function __construct() {}
 
-    public function handle(): void
+    public function handle(NotificationService $svc): void
     {
         $today = Carbon::today();
 
-        // 1. Notify tenants whose rent is due TODAY
+        // ── 1. Rent DUE TODAY ──────────────────────────────────────────────
         $dueToday = RentSchedule::with(['contract.tenant', 'contract.unit.building'])
             ->whereDate('due_date', $today)
             ->whereIn('status', ['due', 'partial'])
             ->get();
 
-        foreach ($dueToday as $schedule) {
-            $contract = $schedule->contract;
-            if (!$contract || !$contract->tenant) continue;
+        if ($dueToday->count() > 0) {
+            $names = $dueToday->map(fn($s) =>
+                ($s->contract->tenant->name ?? '؟') .
+                ' (' . number_format($s->final_amount - $s->paid_amount) . ' ج.م)'
+            )->implode('، ');
 
-            // Notify all users who manage this building
-            $this->notifyOwners(
-                title: "📅 استحقاق إيجار اليوم",
-                body:  "المستأجر {$contract->tenant->name} — {$contract->unit->building->name} وحدة {$contract->unit->unit_number} — مبلغ " . number_format($schedule->final_amount - $schedule->paid_amount) . " ج.م مستحق الدفع اليوم.",
-                url:   route('payments.create', $schedule)
-            );
+            $title = "📅 استحقاق إيجار اليوم — {$dueToday->count()} مستأجر";
+            $body  = $names;
+
+            $svc->notifyRoles(['owner','admin','accountant'], 'rent_due_today', [
+                'title'   => $title,
+                'message' => $body,
+                'count'   => $dueToday->count(),
+                'url'     => route('rent-schedules.index', ['status'=>'due']),
+            ]);
         }
 
-        // 2. Notify about overdue rent schedules (reminder every day)
+        // ── 2. OVERDUE rent (last 90 days) ─────────────────────────────────
         $overdue = RentSchedule::with(['contract.tenant', 'contract.unit.building'])
             ->where('status', 'overdue')
-            ->whereDate('due_date', '>=', $today->copy()->subDays(60)) // last 60 days only
+            ->whereDate('due_date', '>=', $today->copy()->subDays(90))
             ->get();
 
-        foreach ($overdue as $schedule) {
-            $contract = $schedule->contract;
-            if (!$contract || !$contract->tenant) continue;
+        if ($overdue->count() > 0) {
+            // Group by tenant
+            $byTenant = $overdue->groupBy(fn($s) => $s->contract->tenant->name ?? '؟');
 
-            $daysLate = $today->diffInDays(Carbon::parse($schedule->due_date));
+            $lines = $byTenant->map(fn($schedules, $name) =>
+                $name . ': ' . number_format($schedules->sum(fn($s) => $s->final_amount - $s->paid_amount)) . ' ج.م'
+            )->implode('، ');
 
-            $this->notifyOwners(
-                title: "⚠️ إيجار متأخر — {$daysLate} يوم",
-                body:  "المستأجر {$contract->tenant->name} — وحدة {$contract->unit->unit_number} — متأخر {$daysLate} يوم — مبلغ " . number_format($schedule->final_amount - $schedule->paid_amount) . " ج.م",
-                url:   route('rent-schedules.show', $schedule)
-            );
-        }
-    }
+            $totalAmount = $overdue->sum(fn($s) => $s->final_amount - $s->paid_amount);
+            $title = "⚠️ إيجارات متأخرة — {$byTenant->count()} مستأجر — " . number_format($totalAmount) . ' ج.م';
 
-    private function notifyOwners(string $title, string $body, string $url): void
-    {
-        // Get all users with owner or admin role
-        $users = \App\Models\User::role(['owner', 'admin', 'accountant'])->get();
-        foreach ($users as $user) {
-            $this->notificationService->send($user->id, $title, $body, $url);
+            $svc->notifyRoles(['owner','admin','accountant'], 'rent_overdue_reminder', [
+                'title'   => $title,
+                'message' => $lines,
+                'count'   => $overdue->count(),
+                'url'     => route('rent-schedules.index', ['status'=>'overdue']),
+            ]);
         }
     }
 }

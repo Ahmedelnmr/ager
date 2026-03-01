@@ -35,9 +35,37 @@
                             <a href="{{ route('tenants.edit', $t) }}" class="btn btn-sm btn-outline-warning" title="تعديل بيانات المستأجر">
                                 <i class="bi bi-pencil me-1"></i>تعديل
                             </a>
-                            <a href="{{ route('contracts.index', ['tenant_id' => $t->id]) }}" class="btn btn-sm btn-outline-info" title="عقود ومدفوعات واستحقاقات المستأجر">
-                                <i class="bi bi-file-earmark-text me-1"></i>العقود والمدفوعات
-                            </a>
+                            @php $contracts = $t->contracts; @endphp
+                            @if($contracts->isEmpty())
+                                <button class="btn btn-sm btn-outline-secondary disabled" title="لا توجد عقود لهذا المستأجر">
+                                    <i class="bi bi-file-earmark-x me-1"></i>لا عقود
+                                </button>
+                            @elseif($contracts->count() === 1)
+                                {{-- سيناريو 1: عقد واحد → رابط مباشر --}}
+                                <a href="{{ route('contracts.show', $contracts->first()->id) }}" class="btn btn-sm btn-outline-info" title="عرض العقد والمدفوعات">
+                                    <i class="bi bi-file-earmark-text me-1"></i>العقد والمدفوعات
+                                </a>
+                            @else
+                                {{-- سيناريو 2: أكثر من عقد → Dropdown --}}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-info dropdown-toggle" type="button" data-bs-toggle="dropdown" title="اختر العقد">
+                                        <i class="bi bi-file-earmark-text me-1"></i>العقود ({{ $contracts->count() }})
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        @foreach($contracts as $c)
+                                        <li>
+                                            <a class="dropdown-item small" href="{{ route('contracts.show', $c->id) }}">
+                                                <i class="bi bi-building me-1 text-muted"></i>
+                                                {{ $c->unit->building->name ?? '—' }} — وحدة {{ $c->unit->unit_number ?? '—' }}
+                                                <span class="badge rounded-pill ms-1 {{ $c->status === 'active' ? 'bg-success' : 'bg-secondary' }}">
+                                                    {{ $c->status === 'active' ? 'نشط' : 'منتهي' }}
+                                                </span>
+                                            </a>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                             <form method="POST" action="{{ route('tenants.destroy', $t) }}" onsubmit="return confirm('حذف المستأجر {{ $t->name }}؟')">@csrf @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger" title="حذف المستأجر">
                                     <i class="bi bi-trash me-1"></i>حذف

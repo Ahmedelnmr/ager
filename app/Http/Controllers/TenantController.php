@@ -23,7 +23,8 @@ class TenantController extends Controller
                    ->orWhere('phone', 'like', "%{$q}%");
             });
         }
-        $tenants = $query->paginate(20)->appends($request->query());
+        $tenants = $query->with(['contracts' => fn($q) => $q->select('id','tenant_id','unit_id','status')->with('unit:id,unit_number,building_id')->with('unit.building:id,name')
+        ])->paginate(20)->appends($request->query());
         return view('tenants.index', compact('tenants'));
     }
 

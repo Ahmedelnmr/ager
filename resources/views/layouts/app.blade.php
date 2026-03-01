@@ -190,14 +190,85 @@
         </button>
         <span class="page-title ms-2">@yield('page-title', 'لوحة التحكم')</span>
         <div class="ms-auto d-flex align-items-center gap-3">
-            <a href="{{ route('notifications.index') }}" class="position-relative text-secondary text-decoration-none">
-                <i class="bi bi-bell-fill fs-5"></i>
-                @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:.6rem;">
-                    {{ $unreadNotificationsCount > 99 ? '99+' : $unreadNotificationsCount }}
-                </span>
-                @endif
-            </a>
+            @php
+                $bellNotifs = \App\Models\AppNotification::where('user_id', auth()->id())
+                    ->latest()->limit(8)->get();
+                $bellUnread = $bellNotifs->where('is_read', false)->count();
+            @endphp
+            <div class="dropdown">
+                <button class="btn btn-sm position-relative text-secondary border-0 bg-transparent p-0"
+                        id="notifBell" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="font-size:1.25rem; line-height:1;">
+                    <i class="bi bi-bell-fill"></i>
+                    @if($bellUnread > 0)
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size:.6rem;">
+                        {{ $bellUnread > 99 ? '99+' : $bellUnread }}
+                    </span>
+                    @endif
+                </button>
+                <div class="dropdown-menu dropdown-menu-start shadow-lg p-0" style="width:360px;max-height:480px;overflow-y:auto;border-radius:14px;">
+                    {{-- Header --}}
+                    <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-light" style="border-radius:14px 14px 0 0;">
+                        <span class="fw-bold small"><i class="bi bi-bell me-1"></i>الإشعارات</span>
+                        <div class="d-flex gap-2">
+                            @if($bellUnread > 0)
+                            <form method="POST" action="{{ route('notifications.mark-all-read') }}" class="d-inline">
+                                @csrf
+                                <button class="btn btn-xs btn-link text-primary p-0 small text-decoration-none" style="font-size:.78rem;">
+                                    <i class="bi bi-check2-all me-1"></i>قراءة الكل
+                                </button>
+                            </form>
+                            @endif
+                            <a href="{{ route('notifications.index') }}" class="text-muted small text-decoration-none" style="font-size:.78rem;">كل الإشعارات</a>
+                        </div>
+                    </div>
+                    {{-- Notification items --}}
+                    @forelse($bellNotifs as $notif)
+                    @php
+                        $p   = $notif->payload ?? [];
+                        $url = $p['url'] ?? route('notifications.index');
+                        $notifTypeIcon = match($notif->type ?? '') {
+                            'rent_due_today'        => '📅',
+                            'rent_overdue_reminder' => '⚠️',
+                            'contract_ending_soon'  => '📋',
+                            default                 => '🔔',
+                        };
+                    @endphp
+                    <a href="{{ $url }}" class="d-block text-decoration-none px-3 py-2 border-bottom {{ $notif->is_read ? '' : 'bg-info bg-opacity-10' }}"
+                       style="transition:.15s;">
+                        <div class="d-flex gap-2 align-items-start">
+                            <span style="font-size:1.3rem;line-height:1.4;">{{ $notifTypeIcon }}</span>
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold small" style="font-size:.83rem;line-height:1.3;">
+                                    {{ $p['title'] ?? $notif->type }}
+                                    @if(!$notif->is_read)<span class="badge bg-danger ms-1" style="font-size:.6rem;">جديد</span>@endif
+                                </div>
+                                @if(isset($p['message']))
+                                <div class="text-muted" style="font-size:.75rem;line-height:1.3;margin-top:2px;
+                                     overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
+                                    {{ $p['message'] }}
+                                </div>
+                                @endif
+                                <div class="text-muted mt-1" style="font-size:.7rem;">{{ $notif->created_at->diffForHumans() }}</div>
+                            </div>
+                        </div>
+                    </a>
+                    @empty
+                    <div class="text-center text-muted py-4 small">
+                        <i class="bi bi-bell-slash fs-3 d-block mb-2 opacity-40"></i>
+                        لا توجد إشعارات
+                    </div>
+                    @endforelse
+                    {{-- Footer --}}
+                    @if($bellNotifs->count() > 0)
+                    <div class="text-center py-2 bg-light" style="border-radius:0 0 14px 14px;">
+                        <a href="{{ route('notifications.index') }}" class="small text-primary text-decoration-none fw-semibold">
+                            عرض كل الإشعارات <i class="bi bi-arrow-left ms-1"></i>
+                        </a>
+                    </div>
+                    @endif
+                </div>
+            </div>
             <div class="dropdown">
                 <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
                     <i class="bi bi-person-circle me-1"></i>{{ Auth::user()->name }}
