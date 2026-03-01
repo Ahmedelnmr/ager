@@ -24,6 +24,7 @@ class Contract extends Model
         'start_date'               => 'date',
         'end_date'                 => 'date',
         'base_rent'                => 'decimal:2',
+        'due_day'                  => 'integer',
         'security_deposit_amount'  => 'decimal:2',
         'annual_increase_value'    => 'decimal:2',
         'late_penalty_value'       => 'decimal:2',

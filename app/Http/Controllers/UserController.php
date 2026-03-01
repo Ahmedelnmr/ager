@@ -75,6 +75,6 @@ class UserController extends Controller
     public function auditLog()
     {
         $logs = AuditLog::with('user')->latest('created_at')->paginate(30);
-        return view('audit.index', compact('logs'));
+        return view('users.audit', compact('logs'));
     }
 }

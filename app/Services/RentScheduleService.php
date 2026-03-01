@@ -71,7 +71,7 @@ class RentScheduleService
         $periods   = [];
         $current   = Carbon::parse($contract->start_date);
         $end       = Carbon::parse($contract->end_date);
-        $dueDay    = $contract->due_day ?? $current->day;
+        $dueDay    = (int) ($contract->due_day ?? $current->day);
         $interval  = $this->cycleInterval($contract->payment_cycle);
 
         while ($current->lte($end)) {

@@ -51,15 +51,22 @@ class ContractService
     }
 
     /**
-     * Terminate a contract.
+     * Terminate a contract with deposit handling.
+     * $depositAction: 'keep' | 'refund' | 'partial'
+     * $depositRefund: amount to refund if partial or full refund
      */
-    public function terminate(Contract $contract): Contract
+    public function terminate(Contract $contract, string $depositAction = 'keep', float $depositRefund = 0): Contract
     {
-        return DB::transaction(function () use ($contract) {
+        return DB::transaction(function () use ($contract, $depositAction, $depositRefund) {
             $contract->update(['status' => 'terminated']);
             // Mark unit as vacant
             $contract->unit()->update(['status' => 'vacant']);
-            $this->audit($contract, 'terminated');
+            $this->audit($contract, 'terminated', [
+                'deposit_policy'  => $contract->deposit_policy,
+                'deposit_amount'  => $contract->security_deposit_amount,
+                'deposit_action'  => $depositAction,
+                'deposit_refund'  => $depositRefund,
+            ]);
             return $contract;
         });
     }

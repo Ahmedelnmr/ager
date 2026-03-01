@@ -20,9 +20,10 @@ class MaintenanceController extends Controller
 
     public function create()
     {
-        $units = Unit::with('building')->orderBy('building_id')->get();
-        $users = \App\Models\User::all();
-        return view('maintenance.create', compact('units', 'users'));
+        $buildings = \App\Models\Building::orderBy('name')->get();
+        $units     = Unit::with('building')->orderBy('building_id')->get();
+        $users     = \App\Models\User::all();
+        return view('maintenance.create', compact('units', 'users', 'buildings'));
     }
 
     public function store(StoreMaintenanceForm $request)

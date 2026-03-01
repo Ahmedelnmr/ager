@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Building;
 use App\Models\Contract;
 use App\Models\Unit;
 use App\Models\Tenant;
@@ -17,19 +18,33 @@ class ContractController extends Controller
 
     public function index(Request $request)
     {
-        $query = Contract::with(['tenant', 'unit.building'])->latest();
-        if ($request->filled('status'))      $query->where('status', $request->status);
-        if ($request->filled('building_id')) $query->whereHas('unit', fn($q) => $q->where('building_id', $request->building_id));
-        $contracts = $query->paginate(20)->appends($request->query());
-        $buildings = \App\Models\Building::all();
+        $query = Contract::with(['tenant', 'unit.building']);
+
+        // Status filter — mark expired contracts as terminated automatically
+        if ($request->filled('status')) {
+            if ($request->status === 'expired') {
+                // Contracts whose end_date has passed but status still 'active'
+                $query->where('end_date', '<', now())->where('status', 'active');
+            } else {
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('building_id')) {
+            $query->whereHas('unit', fn($q) => $q->where('building_id', $request->building_id));
+        }
+
+        $contracts = $query->latest()->paginate(20)->appends($request->query());
+        $buildings = Building::all();
         return view('contracts.index', compact('contracts', 'buildings'));
     }
 
     public function create()
     {
-        $units   = Unit::where('status', 'vacant')->with('building')->get();
-        $tenants = Tenant::all();
-        return view('contracts.create', compact('units', 'tenants'));
+        $buildings = Building::with(['units' => fn($q) => $q->where('status', 'vacant')])->get();
+        $units     = Unit::where('status', 'vacant')->with('building')->get();
+        $tenants   = Tenant::orderBy('name')->get();
+        return view('contracts.create', compact('units', 'tenants', 'buildings'));
     }
 
     public function store(StoreContractRequest $request)
@@ -38,16 +53,18 @@ class ContractController extends Controller
         if ($request->hasFile('contract_file')) {
             $data['file_path'] = $request->file('contract_file')->store('contracts', 'public');
         }
+        // Store partial refund and any extra settings
         $settings = [];
-        if ($request->filled('override_late_penalty_type')) {
-            $settings['late_penalty_type']  = $request->override_late_penalty_type;
-            $settings['late_penalty_value'] = $request->override_late_penalty_value;
+        if ($request->deposit_policy === 'partial' && $request->filled('partial_refund_type')) {
+            $settings['partial_refund_type']  = $request->partial_refund_type;
+            $settings['partial_refund_value'] = (float) $request->partial_refund_value;
         }
         if (!empty($settings)) $data['settings'] = $settings;
+        unset($data['partial_refund_type'], $data['partial_refund_value']);
 
         $contract = $this->contractService->create($data);
         return redirect()->route('contracts.show', $contract)
-            ->with('success', 'تم إنشاء العقد وتوليد جدول الاستحقاقات.');
+            ->with('success', 'تم إنشاء العقد وتوليد جدول الاستحقاقات بنجاح.');
     }
 
     public function show(Contract $contract)
@@ -58,9 +75,10 @@ class ContractController extends Controller
 
     public function edit(Contract $contract)
     {
-        $units   = Unit::where('status', 'vacant')->orWhere('id', $contract->unit_id)->with('building')->get();
-        $tenants = Tenant::all();
-        return view('contracts.edit', compact('contract', 'units', 'tenants'));
+        $buildings = Building::with(['units' => fn($q) => $q->where('status', 'vacant')->orWhere('id', $contract->unit_id)])->get();
+        $units     = Unit::where('status', 'vacant')->orWhere('id', $contract->unit_id)->with('building')->get();
+        $tenants   = Tenant::orderBy('name')->get();
+        return view('contracts.edit', compact('contract', 'units', 'tenants', 'buildings'));
     }
 
     public function update(UpdateContractRequest $request, Contract $contract)
@@ -75,11 +93,13 @@ class ContractController extends Controller
             ->with('success', 'تم تحديث العقد بنجاح.');
     }
 
-    public function terminate(Contract $contract)
+    public function terminate(Request $request, Contract $contract)
     {
-        $this->contractService->terminate($contract);
+        $depositAction  = $request->input('deposit_action', 'keep');
+        $depositRefund  = (float) $request->input('deposit_refund_amount', 0);
+        $this->contractService->terminate($contract, $depositAction, $depositRefund);
         return redirect()->route('contracts.show', $contract)
-            ->with('success', 'تم إنهاء العقد.');
+            ->with('success', 'تم إنهاء العقد ومعالجة التأمين.');
     }
 
     public function destroy(Contract $contract)

@@ -34,13 +34,25 @@
                     <td>{{ $c->unit->building->name }} / <strong>{{ $c->unit->unit_number }}</strong></td>
                     <td>{{ $c->start_date->format('Y-m-d') }}</td>
                     <td class="{{ $c->end_date->isPast() && $c->status=='active' ? 'text-danger fw-semibold' : '' }}">{{ $c->end_date->format('Y-m-d') }}</td>
-                    <td>{{ number_format($c->base_rent) }}</td>
+                    <td>{{ number_format($c->base_rent) }} ج.م</td>
                     <td>{{ ['monthly'=>'شهري','quarterly'=>'ربع سنوي','yearly'=>'سنوي'][$c->payment_cycle] }}</td>
-                    <td><span class="badge badge-{{ $c->status }} px-2 py-1 rounded-pill">{{ ['active'=>'نشط','expired'=>'منتهي','terminated'=>'مُنهى'][$c->status] }}</span></td>
                     <td>
-                        <div class="d-flex gap-1">
-                            <a href="{{ route('contracts.show', $c) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
-                            <a href="{{ route('contracts.edit', $c) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                        @if($c->status === 'active' && $c->end_date->isPast())
+                            <span class="badge bg-warning text-dark px-2 py-1 rounded-pill">منتهي (يحتاج إنهاء)</span>
+                        @else
+                            <span class="badge badge-{{ $c->status }} px-2 py-1 rounded-pill">{{ ['active'=>'نشط','expired'=>'منتهي','terminated'=>'مُنهى'][$c->status] ?? $c->status }}</span>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="d-flex gap-1 flex-wrap">
+                            <a href="{{ route('contracts.show', $c) }}" class="btn btn-sm btn-outline-primary" title="عرض العقد">
+                                <i class="bi bi-eye me-1"></i>عرض
+                            </a>
+                            @if($c->status === 'active')
+                            <a href="{{ route('contracts.edit', $c) }}" class="btn btn-sm btn-outline-warning" title="تعديل العقد">
+                                <i class="bi bi-pencil me-1"></i>تعديل
+                            </a>
+                            @endif
                         </div>
                     </td>
                 </tr>
