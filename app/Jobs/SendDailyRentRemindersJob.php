@@ -21,51 +21,50 @@ class SendDailyRentRemindersJob implements ShouldQueue
     {
         $today = Carbon::today();
 
-        // ── 1. Rent DUE TODAY ──────────────────────────────────────────────
+        // ── 1. Rent DUE TODAY ─────────────────────────
         $dueToday = RentSchedule::with(['contract.tenant', 'contract.unit.building'])
             ->whereDate('due_date', $today)
             ->whereIn('status', ['due', 'partial'])
-            ->get();
+            ->get()
+            ->filter(fn($s) => $s->contract?->tenant !== null);   // safe filter
 
         if ($dueToday->count() > 0) {
             $names = $dueToday->map(fn($s) =>
-                ($s->contract->tenant->name ?? '؟') .
-                ' (' . number_format($s->final_amount - $s->paid_amount) . ' ج.م)'
+                ($s->contract->tenant->name) .
+                ' (' . number_format((float)$s->final_amount - (float)$s->paid_amount) . ' ج.م)'
             )->implode('، ');
 
-            $title = "📅 استحقاق إيجار اليوم — {$dueToday->count()} مستأجر";
-            $body  = $names;
-
             $svc->notifyRoles(['owner','admin','accountant'], 'rent_due_today', [
-                'title'   => $title,
-                'message' => $body,
+                'title'   => "📅 استحقاق إيجار اليوم — {$dueToday->count()} مستأجر",
+                'message' => $names,
                 'count'   => $dueToday->count(),
-                'url'     => route('rent-schedules.index', ['status'=>'due']),
+                'url'     => url('/rent-schedules?status=due'),
             ]);
         }
 
-        // ── 2. OVERDUE rent (last 90 days) ─────────────────────────────────
-        $overdue = RentSchedule::with(['contract.tenant', 'contract.unit.building'])
+        // ── 2. OVERDUE (last 90 days) ─────────────────
+        $overdue = RentSchedule::with(['contract.tenant'])
             ->where('status', 'overdue')
             ->whereDate('due_date', '>=', $today->copy()->subDays(90))
-            ->get();
+            ->get()
+            ->filter(fn($s) => $s->contract?->tenant !== null);   // safe filter
 
         if ($overdue->count() > 0) {
-            // Group by tenant
-            $byTenant = $overdue->groupBy(fn($s) => $s->contract->tenant->name ?? '؟');
+            $byTenant = $overdue->groupBy(fn($s) => $s->contract->tenant->name);
 
             $lines = $byTenant->map(fn($schedules, $name) =>
-                $name . ': ' . number_format($schedules->sum(fn($s) => $s->final_amount - $s->paid_amount)) . ' ج.م'
+                $name . ': ' . number_format(
+                    $schedules->sum(fn($s) => (float)$s->final_amount - (float)$s->paid_amount)
+                ) . ' ج.م'
             )->implode('، ');
 
-            $totalAmount = $overdue->sum(fn($s) => $s->final_amount - $s->paid_amount);
-            $title = "⚠️ إيجارات متأخرة — {$byTenant->count()} مستأجر — " . number_format($totalAmount) . ' ج.م';
+            $totalAmount = $overdue->sum(fn($s) => (float)$s->final_amount - (float)$s->paid_amount);
 
             $svc->notifyRoles(['owner','admin','accountant'], 'rent_overdue_reminder', [
-                'title'   => $title,
+                'title'   => "⚠️ إيجارات متأخرة — {$byTenant->count()} مستأجر — " . number_format($totalAmount) . ' ج.م',
                 'message' => $lines,
                 'count'   => $overdue->count(),
-                'url'     => route('rent-schedules.index', ['status'=>'overdue']),
+                'url'     => url('/rent-schedules?status=overdue'),
             ]);
         }
     }

@@ -12,7 +12,7 @@ class NotificationService
      */
     public function notifyRoles(array $roles, string $type, array $payload): void
     {
-        $users = User::role($roles)->where('is_active', true)->get();
+        $users = User::role($roles)->get();
         foreach ($users as $user) {
             $this->notifyUser($user->id, $type, $payload);
         }
