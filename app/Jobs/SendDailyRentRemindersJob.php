@@ -34,7 +34,7 @@ class SendDailyRentRemindersJob implements ShouldQueue
                 ' (' . number_format((float)$s->final_amount - (float)$s->paid_amount) . ' ج.م)'
             )->implode('، ');
 
-            $svc->notifyRoles(['owner','admin','accountant'], 'rent_due_today', [
+            $svc->notifyRoles(['owner','admin','accountant'], 'custom', [
                 'title'   => "📅 استحقاق إيجار اليوم — {$dueToday->count()} مستأجر",
                 'message' => $names,
                 'count'   => $dueToday->count(),
@@ -60,7 +60,7 @@ class SendDailyRentRemindersJob implements ShouldQueue
 
             $totalAmount = $overdue->sum(fn($s) => (float)$s->final_amount - (float)$s->paid_amount);
 
-            $svc->notifyRoles(['owner','admin','accountant'], 'rent_overdue_reminder', [
+            $svc->notifyRoles(['owner','admin','accountant'], 'overdue_payment', [
                 'title'   => "⚠️ إيجارات متأخرة — {$byTenant->count()} مستأجر — " . number_format($totalAmount) . ' ج.م',
                 'message' => $lines,
                 'count'   => $overdue->count(),

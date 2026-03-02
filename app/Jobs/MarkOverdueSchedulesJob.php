@@ -31,8 +31,8 @@ class MarkOverdueSchedulesJob implements ShouldQueue
                 'count'        => $count,
                 'total'        => $overdueTotal,
                 'link'         => route('rent-schedules.index', ['status' => 'overdue']),
-                'message'      => "يوجد {$count} استحقاق متأخر بإجمالي " . number_format($overdueTotal, 2) . " ريال.",
-                'sms_message'  => "تنبيه: يوجد {$count} إيجار متأخر بإجمالي " . number_format($overdueTotal, 2) . " ريال.",
+                'message'      => "يوجد {$count} استحقاق متأخر بإجمالي " . number_format($overdueTotal, 2) . " ج.م.",
+                'sms_message'  => "تنبيه: يوجد {$count} إيجار متأخر بإجمالي " . number_format($overdueTotal, 2) . " ج.م.",
             ]);
         }
     }
