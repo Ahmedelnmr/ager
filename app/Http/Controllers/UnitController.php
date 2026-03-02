@@ -68,8 +68,28 @@ class UnitController extends Controller
 
     public function destroy(Unit $unit)
     {
+        // Guard: block if unit has contracts
+        $contractsCount = $unit->contracts()->count();
+        if ($contractsCount > 0) {
+            return redirect()->route('units.show', $unit)
+                ->with('error',
+                    "لا يمكن حذف الوحدة «{$unit->unit_number}» لأن لديها {$contractsCount} عقد مرتبط بها."
+                    . " يرجى إنهاء أو حذف العقود أولاً."
+                );
+        }
+
+        // Guard: block if unit has open maintenance requests
+        $maintenanceCount = $unit->maintenanceRequests()->whereNotIn('status', ['completed','cancelled'])->count();
+        if ($maintenanceCount > 0) {
+            return redirect()->route('units.show', $unit)
+                ->with('error',
+                    "لا يمكن حذف الوحدة لأن لديها {$maintenanceCount} طلب صيانة مفتوح."
+                    . " يرجى إغلاق طلبات الصيانة أولاً."
+                );
+        }
+
         $unit->delete();
         return redirect()->route('units.index')
-            ->with('success', 'تم حذف الوحدة.');
+            ->with('success', 'تم حذف الوحدة بنجاح.');
     }
 }

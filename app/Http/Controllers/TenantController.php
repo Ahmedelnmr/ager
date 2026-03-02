@@ -74,6 +74,16 @@ class TenantController extends Controller
 
     public function destroy(Tenant $tenant)
     {
+        // Guard: block if tenant has contracts (active or historical)
+        $contractsCount = $tenant->contracts()->count();
+        if ($contractsCount > 0) {
+            return redirect()->route('tenants.show', $tenant)
+                ->with('error',
+                    "لا يمكن حذف المستأجر «{$tenant->name}» لأن لديه {$contractsCount} عقد مرتبط به."
+                    . " يرجى إنهاء أو حذف العقود أولاً."
+                );
+        }
+
         $tenant->delete();
         return redirect()->route('tenants.index')
             ->with('success', 'تم حذف المستأجر.');

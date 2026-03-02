@@ -56,8 +56,18 @@ class BuildingController extends Controller
 
     public function destroy(Building $building)
     {
+        // Guard: block deletion if the building has units
+        $unitsCount = $building->units()->count();
+        if ($unitsCount > 0) {
+            return redirect()->route('buildings.show', $building)
+                ->with('error',
+                    "لا يمكن حذف المبنى «{$building->name}» لأنه يحتوي على {$unitsCount} وحدة."
+                    . " يرجى حذف الوحدات أولاً ثم إعادة المحاولة."
+                );
+        }
+
         $building->delete();
         return redirect()->route('buildings.index')
-            ->with('success', 'تم حذف المبنى.');
+            ->with('success', 'تم حذف المبنى بنجاح.');
     }
 }

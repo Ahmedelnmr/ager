@@ -87,8 +87,8 @@
                 @forelse($endingSoon->take(6) as $c)
                 <div class="d-flex align-items-center px-3 py-2 border-bottom">
                     <div class="flex-grow-1">
-                        <div class="fw-semibold small">{{ $c->tenant->name }}</div>
-                        <div class="text-muted" style="font-size:.78rem;">{{ $c->unit->building->name }} — وحدة {{ $c->unit->unit_number }}</div>
+                        <div class="fw-semibold small">{{ $c->tenant?->name ?? '—' }}</div>
+                        <div class="text-muted" style="font-size:.78rem;">{{ $c->unit?->building?->name ?? '—' }} — وحدة {{ $c->unit?->unit_number ?? '—' }}</div>
                     </div>
                     <div class="text-end">
                         <span class="badge bg-warning text-dark">{{ now()->diffInDays($c->end_date) }} يوم</span>
