@@ -76,11 +76,19 @@
         }
 
         /* Tables */
-        .table-custom { border-radius: 12px; overflow: hidden; }
+        .table-custom { border-radius: 12px; overflow: hidden; white-space: nowrap; }
         .table-custom thead th {
             background: var(--primary); color: #fff; font-weight: 700; border: none;
         }
         .table-custom tbody tr:hover { background: #e8f4fd; }
+
+        /* Sidebar Overlay for Mobile */
+        #sidebar-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 999; backdrop-filter: blur(2px);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #sidebar-overlay.show { display: block; opacity: 1; }
 
         /* Badges */
         .badge-active      { background:#d5f5e3; color:#1e8449; }
@@ -120,11 +128,27 @@
             #sidebar { transform: translateX(260px); transition: transform .3s; }
             #sidebar.open { transform: translateX(0); }
             #main { margin-right: 0; }
+            
+            #topbar { padding: 0 0.8rem; }
+            .page-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+            .page-content { padding: 1rem 0.5rem; }
+            .card-header { padding: 0.75rem 1rem; }
+            
+            /* Notification Dropdown Mobile Fix */
+            .notif-dropdown-menu { width: 92vw !important; max-width: 360px !important; left: -60px !important; right: auto !important; }
+            .dropdown-menu-start { left: 0 !important; right: auto !important; }
+            
+            /* Optimize Action Buttons in Tables */
+            .table-custom td .btn { padding: 0.25rem 0.4rem; font-size: 0.75rem; }
+            .icon-box { width: 48px; height: 48px; font-size: 1.25rem; }
         }
     </style>
     @stack('styles')
 </head>
 <body>
+
+<!-- SIDEBAR OVERLAY -->
+<div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- SIDEBAR -->
 <nav id="sidebar">
@@ -185,7 +209,7 @@
 <div id="main">
     <!-- TOPBAR -->
     <div id="topbar">
-        <button class="btn btn-sm d-md-none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <button class="btn btn-sm d-md-none" onclick="toggleSidebar()">
             <i class="bi bi-list fs-4"></i>
         </button>
         <span class="page-title ms-2">@yield('page-title', 'لوحة التحكم')</span>
@@ -206,7 +230,7 @@
                     </span>
                     @endif
                 </button>
-                <div class="dropdown-menu dropdown-menu-start shadow-lg p-0" style="width:360px;max-height:480px;overflow-y:auto;border-radius:14px;">
+                <div class="dropdown-menu notif-dropdown-menu dropdown-menu-start shadow-lg p-0" style="width:360px;max-height:480px;overflow-y:auto;border-radius:14px;">
                     {{-- Header --}}
                     <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom bg-light" style="border-radius:14px 14px 0 0;">
                         <span class="fw-bold small"><i class="bi bi-bell me-1"></i>الإشعارات</span>
@@ -316,6 +340,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleSidebar() {
+        document.getElementById('sidebar').classList.toggle('open');
+        document.getElementById('sidebar-overlay').classList.toggle('show');
+    }
+</script>
 @stack('scripts')
 </body>
 </html>

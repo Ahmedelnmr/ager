@@ -20,7 +20,7 @@
                 <div class="kpi-icon" style="background:#dbeafe; color:#1e40af;"><i class="bi bi-cash-stack"></i></div>
                 <div>
                     <div class="text-muted small">إيرادات هذا الشهر</div>
-                    <div class="fw-bold fs-5">{{ number_format($monthlyIncome, 0) }} ريال</div>
+                    <div class="fw-bold fs-5">{{ number_format($monthlyIncome, 0) }} ج.م</div>
                 </div>
             </div>
         </div>
@@ -31,7 +31,7 @@
                 <div class="kpi-icon" style="background:#fee2e2; color:#991b1b;"><i class="bi bi-exclamation-octagon-fill"></i></div>
                 <div>
                     <div class="text-muted small">إجمالي المتأخرات</div>
-                    <div class="fw-bold fs-5 text-danger">{{ number_format($overdueTotal, 0) }} ريال</div>
+                    <div class="fw-bold fs-5 text-danger">{{ number_format($overdueTotal, 0) }} ج.م</div>
                     <div class="small text-muted">{{ $overdueSchedules }} استحقاق</div>
                 </div>
             </div>
@@ -114,7 +114,7 @@ new Chart(ctx, {
     data: {
         labels: {!! json_encode($monthlyChart->pluck('month')) !!},
         datasets: [{
-            label: 'الإيرادات (ريال)',
+            label: 'الإيرادات (ج.م)',
             data: {!! json_encode($monthlyChart->pluck('income')) !!},
             backgroundColor: 'rgba(26,82,118,0.8)',
             borderRadius: 8,
