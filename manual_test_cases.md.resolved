@@ -1,0 +1,226 @@
+# Ager – Manual Test Cases
+
+**Project:** Ager Property Management System  
+**Base URL:** `http://localhost:8000`  
+**Date:** 2026-03-02  
+**Test Environment:** Local (SQLite in-memory for unit tests; MySQL for manual testing)
+
+> **Legend** — Mark each result as: ✅ Pass | ❌ Fail | ⏭ Skip
+
+---
+
+## Module 1 — Authentication
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| AUTH-01 | Login with valid credentials | 1. Go to `/login`<br>2. Enter valid email & password<br>3. Click **Login** | Redirected to `/dashboard`. Session is active. | |
+| AUTH-02 | Login with invalid password | 1. Go to `/login`<br>2. Enter valid email + wrong password<br>3. Click **Login** | Error message shown: "These credentials do not match our records." | |
+| AUTH-03 | Login with empty fields | 1. Go to `/login`<br>2. Leave both fields empty<br>3. Click **Login** | Validation errors shown for email and password fields. | |
+| AUTH-04 | Logout | 1. Log in as any user<br>2. Click **Logout** | Redirected to `/login`. Session is destroyed. Accessing `/dashboard` redirects back to `/login`. | |
+| AUTH-05 | Guest is redirected on protected page | 1. Without logging in, visit `/buildings` | Redirected to `/login`. | |
+| AUTH-06 | Register new user (via registration form) | 1. Go to `/register`<br>2. Fill name, email, password, confirm password<br>3. Click **Register** | New user account created. Redirected to `/dashboard`. | |
+| AUTH-07 | Password reset – request link | 1. Go to `/forgot-password`<br>2. Enter registered email<br>3. Click **Send Reset Link** | Success message shown. Reset email sent. | |
+| AUTH-08 | Password reset – use token | 1. Click link from reset email<br>2. Enter new password + confirmation<br>3. Submit | Password changed. Redirected to `/login`. Can log in with new password. | |
+| AUTH-09 | Email verification prompt | 1. Register a new user<br>2. Navigate to verification-required area | Prompt shown to verify email. Verification email sent. | |
+
+---
+
+## Module 2 — Dashboard
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| DASH-01 | Dashboard loads correctly | 1. Log in as owner<br>2. Visit `/dashboard` | Page renders. Shows: Total Buildings, Total Units, Rented Units, Vacant Units, Active Contracts. | |
+| DASH-02 | Monthly income widget | 1. Ensure at least one payment exists this month<br>2. Visit `/dashboard` | "This Month's Income" displays the correct summed amount. | |
+| DASH-03 | Overdue schedules count | 1. Ensure at least one overdue rent schedule exists<br>2. Visit `/dashboard` | Overdue count and total overdue amount are displayed correctly. | |
+| DASH-04 | Contracts ending soon | 1. Create a contract with an end date within the next 30 days<br>2. Visit `/dashboard` | The contract appears in the "Ending Soon" list with tenant name and unit. | |
+| DASH-05 | Monthly income chart | 1. Visit `/dashboard` | A bar/line chart shows the last 6 months of income with correct month labels. | |
+
+---
+
+## Module 3 — Buildings
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| BLDG-01 | List all buildings | 1. Log in<br>2. Go to `/buildings` | All buildings listed with unit counts (total, active, vacant). Paginated at 15. | |
+| BLDG-02 | Create building – valid data | 1. Go to `/buildings/create`<br>2. Fill: Name, City, Address, Late Penalty Type = Percent, Value = 5<br>3. Submit | Redirected to the new building's detail page. Success flash message shown. Building visible in list. | |
+| BLDG-03 | Create building – name required | 1. Go to `/buildings/create`<br>2. Leave **Name** empty<br>3. Submit | Validation error: "The name field is required." Form not submitted. | |
+| BLDG-04 | View building detail | 1. Click on a building name from the list | Building detail page shows building info and a list of its units (with tenant names for rented units). | |
+| BLDG-05 | Edit building | 1. Open a building detail<br>2. Click **Edit**<br>3. Change name<br>4. Submit | Redirected back to building detail. Updated name shown. Success message visible. | |
+| BLDG-06 | Delete building | 1. Open a building<br>2. Click **Delete** / confirm deletion | Building removed from list. Visit `/buildings` confirms it no longer appears (soft-deleted). | |
+| BLDG-07 | Audit log on create | 1. Create a new building as an authenticated user<br>2. Visit `/audit-log` | A `building.created` entry appears with the correct user and building ID. | |
+
+---
+
+## Module 4 — Units
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| UNIT-01 | List all units | 1. Go to `/units` | All units listed with building name and status. Paginated at 20. | |
+| UNIT-02 | Filter by building | 1. Go to `/units`<br>2. Select a building from the filter<br>3. Submit | Only units belonging to that building are shown. | |
+| UNIT-03 | Filter by status | 1. Go to `/units`<br>2. Select status = **Vacant**<br>3. Submit | Only vacant units shown. | |
+| UNIT-04 | Filter by type | 1. Go to `/units`<br>2. Choose a unit type<br>3. Submit | Only units of that type shown. | |
+| UNIT-05 | Create unit – valid | 1. Go to `/units/create`<br>2. Select a building, enter unit number, type, floor, area<br>3. Submit | Redirected to unit detail. Success message shown. Unit appears in list. | |
+| UNIT-06 | Create unit – required fields missing | 1. Go to `/units/create` and submit empty form | Validation errors for required fields. | |
+| UNIT-07 | View unit detail | 1. Click a unit from the list | Unit detail page shows: building, contracts history, maintenance requests. | |
+| UNIT-08 | Edit unit | 1. Open a unit<br>2. Click **Edit**<br>3. Change floor number<br>4. Submit | Updated data shown on detail page. Success message. | |
+| UNIT-09 | Delete unit | 1. Open a unit (that has no active contract)<br>2. Click **Delete** | Unit removed. Success message. Redirected to `/units`. | |
+| UNIT-10 | Unit status auto-changes to Rented | 1. Create a contract for a **Vacant** unit<br>2. Revisit the unit detail | Unit status changed to **Rented**. | |
+
+---
+
+## Module 5 — Tenants
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| TNT-01 | List all tenants | 1. Go to `/tenants` | All tenants listed with contract count. Paginated at 20. | |
+| TNT-02 | Search tenants | 1. Go to `/tenants`<br>2. Type a name, phone, or national ID into the search box<br>3. Submit | Only matching tenants shown. | |
+| TNT-03 | Create tenant – valid | 1. Go to `/tenants/create`<br>2. Fill all required fields (name, national ID, phone)<br>3. Submit | Redirected to tenant detail. Success message shown. | |
+| TNT-04 | Create tenant – with photo | 1. Go to `/tenants/create`<br>2. Fill fields and upload a photo<br>3. Submit | Photo stored. Shown on tenant detail page. | |
+| TNT-05 | Create tenant – name required | 1. Submit the create form without a name | Validation error for name field. | |
+| TNT-06 | View tenant detail | 1. Click a tenant | Detail page shows personal info, all contracts, and rent schedule summaries. | |
+| TNT-07 | Edit tenant | 1. Open a tenant → **Edit**<br>2. Update phone number<br>3. Submit | Updated info shown. Success message. | |
+| TNT-08 | Edit tenant – replace photo | 1. Open a tenant with a photo → **Edit**<br>2. Upload a new photo<br>3. Submit | Old photo replaced. New photo displayed. | |
+| TNT-09 | Delete tenant | 1. Open a tenant<br>2. Click **Delete** | Tenant soft-deleted. No longer in list. | |
+
+---
+
+## Module 6 — Contracts
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| CONT-01 | List contracts | 1. Go to `/contracts` | All contracts with tenant, unit, building, and status shown. Paginated at 20. | |
+| CONT-02 | Filter by status | 1. Go to `/contracts`<br>2. Select **Active** from status filter | Only active contracts shown. | |
+| CONT-03 | Filter by expired | 1. Go to `/contracts`<br>2. Select **Expired** | Contracts whose end date has passed but are still active shown. | |
+| CONT-04 | Filter by building | 1. Go to `/contracts`<br>2. Select a building from filter | Only contracts for units in that building shown. | |
+| CONT-05 | Create contract – monthly | 1. Go to `/contracts/create`<br>2. Select a vacant unit and a tenant<br>3. Set start date, end date, rent amount, payment frequency = **Monthly**<br>4. Submit | Contract created. Rent schedule generated (one row per month). Redirected to contract detail. | |
+| CONT-06 | Create contract – quarterly | Same as CONT-05 but frequency = **Quarterly** | Rent schedule has one row every 3 months. | |
+| CONT-07 | Create contract – yearly | Same as CONT-05 but frequency = **Yearly** | Rent schedule has one row per year. | |
+| CONT-08 | Create contract – with file upload | 1. Fill the create form<br>2. Attach a PDF file<br>3. Submit | Contract saved with file. File link visible on detail page. | |
+| CONT-09 | Create contract – annual increase (percent) | 1. Set annual increase type = **Percent**, value = 10<br>2. Submit (multi-year contract) | Rent for year 2+ is 10% higher in the schedule. | |
+| CONT-10 | Create contract – annual increase (fixed) | 1. Set annual increase type = **Fixed**, value = 500<br>2. Submit | Rent for year 2+ is 500 higher. | |
+| CONT-11 | View contract detail | 1. Open a contract | Shows: tenant, unit/building, all payment schedules, payments made, additional charges. | |
+| CONT-12 | Edit contract | 1. Open a contract → **Edit**<br>2. Change the deposit amount<br>3. Submit | Updated. Redirected to detail. Success message. | |
+| CONT-13 | Terminate contract – keep deposit | 1. Open an active contract<br>2. Click **Terminate**<br>3. Select deposit action = **Keep**<br>4. Confirm | Contract status = **Terminated**. Deposit kept. Unit status reverts to **Vacant**. | |
+| CONT-14 | Terminate contract – refund deposit | 1. Open an active contract<br>2. Click **Terminate**<br>3. Select deposit action = **Refund**, enter amount<br>4. Confirm | Contract terminated. Refund recorded. Unit becomes **Vacant**. | |
+| CONT-15 | Delete contract | 1. Open a contract → **Delete** | Contract removed. Redirected to `/contracts`. | |
+
+---
+
+## Module 7 — Rent Schedules
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| RENT-01 | View rent schedule list | 1. Go to `/rent-schedules` | All schedule entries listed with status (pending, paid, overdue, partial). | |
+| RENT-02 | View single schedule | 1. Click a schedule entry | Detail page shows: due date, final amount, paid amount, status, any penalty applied. | |
+| RENT-03 | Overdue status applied automatically | 1. Ensure a schedule's due date is in the past and it is unpaid<br>2. Trigger the penalty service (or wait for scheduled job)<br>3. Revisit the schedule | Status changed to **Overdue**. Penalty amount applied if penalty type is set. | |
+| RENT-04 | Percent late penalty | 1. Configure building with 5% late penalty<br>2. Let a schedule become overdue<br>3. View the schedule | `final_amount` = original amount × 1.05. | |
+| RENT-05 | Fixed late penalty | 1. Configure building with fixed 200 penalty<br>2. Let a schedule become overdue | `final_amount` = original amount + 200. | |
+| RENT-06 | No penalty when type is none | 1. Configure building with penalty type = **None**<br>2. Let a schedule become overdue | `final_amount` unchanged. Status = **Overdue**. | |
+
+---
+
+## Module 8 — Payments
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| PAY-01 | List payments | 1. Go to `/payments` | All payment records listed with tenant, schedule, amount, and date. | |
+| PAY-02 | Filter payments by contract | 1. Go to `/payments`<br>2. Select a contract from filter | Only payments for that contract shown. | |
+| PAY-03 | Record full payment | 1. Open a pending rent schedule<br>2. Click **Record Payment**<br>3. Enter the full due amount<br>4. Set payment date<br>5. Submit | Payment recorded. Schedule status → **Paid**. Redirected to receipt page. | |
+| PAY-04 | Record partial payment | 1. Same as PAY-03 but enter an amount less than the due amount | Payment recorded. Schedule status → **Partial**. Receipt shown. | |
+| PAY-05 | Payment amount must be positive | 1. Go to payment form<br>2. Enter 0 or negative amount<br>3. Submit | Validation error: amount must be positive. | |
+| PAY-06 | View receipt | 1. After recording payment, view receipt page | Receipt shows: tenant name, unit, building, amount paid, date, collected by. | |
+| PAY-07 | Download receipt PDF | 1. On the receipt page, click **Download PDF** | PDF file (`receipt-{id}.pdf`) downloaded. Contains correct payment details. | |
+
+---
+
+## Module 9 — Maintenance
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| MAINT-01 | List maintenance requests | 1. Go to `/maintenance` | All requests shown with unit, building, status. Paginated at 20. | |
+| MAINT-02 | Filter by status | 1. Go to `/maintenance`<br>2. Select **Pending** filter | Only pending requests shown. | |
+| MAINT-03 | Create maintenance request | 1. Go to `/maintenance/create`<br>2. Select a unit, enter description<br>3. Submit | Request saved with status **Pending**. Redirected to maintenance list. Success message. | |
+| MAINT-04 | Create request – description required | 1. Submit without description | Validation error shown. | |
+| MAINT-05 | View maintenance detail | 1. Click a maintenance request | Detail shows: unit, building, assigned user, description, cost, dates, status. | |
+| MAINT-06 | Update maintenance – assign user | 1. Open a request → **Edit**<br>2. Assign to a user<br>3. Set status = **In Progress**<br>4. Submit | Status updated. Assigned user shown on detail. Success message. | |
+| MAINT-07 | Update maintenance – mark completed | 1. Open an in-progress request → **Edit**<br>2. Set status = **Completed**, enter cost, finished date<br>3. Submit | Status = **Completed**. Cost and dates saved. | |
+| MAINT-08 | Cancel maintenance request | 1. Open a request → **Edit**<br>2. Set status = **Cancelled**<br>3. Submit | Status = **Cancelled**. Visible on detail page. | |
+
+---
+
+## Module 10 — Reports
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| RPT-01 | Open reports page | 1. Go to `/reports` | Page loads showing summary cards: this month's income, overdue total, active contracts, occupancy rate. | |
+| RPT-02 | Payments report – no filter | 1. Go to `/reports`<br>2. Select type = **Payments**<br>3. Submit without date range | All payments listed on the page. | |
+| RPT-03 | Payments report – date range | 1. Select type = **Payments**<br>2. Enter from/to date<br>3. Submit | Only payments within that date range shown. | |
+| RPT-04 | Payments report – building filter | 1. Select type = **Payments** + choose a building<br>2. Submit | Only payments for units in that building shown. | |
+| RPT-05 | Contracts report | 1. Select type = **Contracts**<br>2. Submit | All contracts listed with tenant and unit. | |
+| RPT-06 | Contracts report – status filter | 1. Select type = **Contracts** + status = **Active** | Only active contracts shown. | |
+| RPT-07 | Export payments to Excel | 1. On the payments report page, click **Export Excel** | `.xlsx` file downloaded. Contains correct payment records. | |
+| RPT-08 | Export contracts to Excel | 1. On the contracts report page, click **Export Excel** | `.xlsx` file downloaded. Contains correct contract records. | |
+| RPT-09 | Occupancy rate is correct | 1. Note number of rented vs total units<br>2. Open `/reports` | Occupancy rate = (rented ÷ total) × 100, rounded to 1 decimal. | |
+
+---
+
+## Module 11 — User Management
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| USER-01 | List users | 1. Go to `/users` | All users shown with their roles. Paginated at 15. | |
+| USER-02 | Create user – valid | 1. Go to `/users/create`<br>2. Fill name, email, password, confirm password, select role<br>3. Submit | User created. Redirected to `/users`. Success message. | |
+| USER-03 | Create user – email must be unique | 1. Try creating a user with an email already in the system | Validation error: "The email has already been taken." | |
+| USER-04 | Create user – password min 8 chars | 1. Enter a password with fewer than 8 characters | Validation error on password field. | |
+| USER-05 | Create user – password confirmation | 1. Enter mismatched password and confirmation | Validation error. | |
+| USER-06 | Edit user | 1. Click **Edit** on a user<br>2. Change their phone<br>3. Submit | User updated. Success message. | |
+| USER-07 | Change user role | 1. Edit a user<br>2. Change their role<br>3. Submit | User's role updated. Reflected on user list. | |
+| USER-08 | Deactivate user | 1. Edit a user<br>2. Uncheck **Active**<br>3. Submit | `is_active` = false. User can no longer log in. | |
+| USER-09 | Change user password | 1. Edit a user<br>2. Enter new password + confirmation<br>3. Submit | Password changed. User can log in with the new password. | |
+
+---
+
+## Module 12 — Audit Log
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| AUDIT-01 | View audit log | 1. Go to `/audit-log` | Paginated list of all audit entries (action, user, model, IP, timestamp). | |
+| AUDIT-02 | Building create logged | 1. Create a new building<br>2. Check `/audit-log` | Entry with action `building.created` and correct user shown. | |
+| AUDIT-03 | Unit create logged | 1. Create a new unit<br>2. Check `/audit-log` | Entry with action `unit.created` shown. | |
+| AUDIT-04 | Tenant create logged | 1. Create a new tenant<br>2. Check `/audit-log` | Entry with action `tenant.created` shown. | |
+
+---
+
+## Module 13 — Profile Management
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| PROF-01 | View profile page | 1. Go to `/profile` | Page shows current name and email. | |
+| PROF-02 | Update name | 1. Go to `/profile`<br>2. Change name<br>3. Click **Save** | Name updated. Success message. New name shown in nav/profile. | |
+| PROF-03 | Update email | 1. Go to `/profile`<br>2. Change email<br>3. Click **Save** | Email updated. Verification prompt shown if email verification is enabled. | |
+| PROF-04 | Update password | 1. Go to `/profile` password section<br>2. Enter current password, new password, confirmation<br>3. Submit | Password updated. Success message. | |
+| PROF-05 | Update password – wrong current | 1. Enter an incorrect current password<br>3. Submit | Error: "The password is incorrect." | |
+| PROF-06 | Delete account | 1. Go to `/profile`<br>2. Click **Delete Account**<br>3. Confirm with correct password | Account deleted. Logged out and redirected to homepage. | |
+| PROF-07 | Delete account – wrong password | 1. Attempt account deletion with wrong password | Error: "The password is incorrect." Account not deleted. | |
+
+---
+
+## Module 14 — Notifications
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| NOTIF-01 | List notifications | 1. Go to `/notifications` | All notifications listed for the current user. | |
+| NOTIF-02 | Mark single notification as read | 1. Click **Mark as Read** on a notification | Notification marked as read. Visual indicator updated. | |
+| NOTIF-03 | Mark all notifications as read | 1. Click **Mark All as Read** | All notifications marked as read. | |
+
+---
+
+## Cross-Cutting & Security
+
+| ID | Test Case | Steps | Expected Result | Result |
+|----|-----------|-------|-----------------|--------|
+| SEC-01 | Unauthenticated access to all protected routes | 1. Log out<br>2. Try to visit `/dashboard`, `/buildings`, `/units`, `/tenants`, `/contracts`, `/payments`, `/maintenance`, `/reports`, `/users`, `/audit-log` | All routes redirect to `/login`. | |
+| SEC-02 | Pagination on large datasets | 1. Create 20+ buildings<br>2. Visit `/buildings` | First 15 shown with working "Next" pagination link. | |
+| SEC-03 | Flash success messages | 1. Perform any create/update/delete action | Green success flash message visible at top of page after redirect. | |
+| SEC-04 | Flash error messages | 1. Submit an invalid form | Red error messages shown per field. | |
+| SEC-05 | Arabic content rendering | 1. Create records with Arabic names (e.g., `برج النخيل`) | Arabic text saved and displayed correctly with RTL layout. | |

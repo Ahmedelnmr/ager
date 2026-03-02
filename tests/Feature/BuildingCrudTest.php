@@ -44,7 +44,8 @@ class BuildingCrudTest extends TestCase
             ],
         ]);
 
-        $response->assertRedirect(route('buildings.index'));
+        $building = \App\Models\Building::where('name', 'برج التجارة')->first();
+        $response->assertRedirect(route('buildings.show', $building));
         $this->assertDatabaseHas('buildings', ['name' => 'برج التجارة']);
     }
 
