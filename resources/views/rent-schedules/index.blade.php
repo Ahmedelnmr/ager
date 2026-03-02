@@ -15,7 +15,10 @@
     <div class="col-md-3">
         <input type="month" name="month" class="form-control form-control-sm" value="{{ request('month') }}" placeholder="الشهر">
     </div>
-    <div class="col-md-2"><button class="btn btn-primary btn-sm w-100"><i class="bi bi-filter"></i></button></div>
+    <div class="col-md-3">
+        <input type="date" name="due_date" class="form-control form-control-sm" value="{{ request('due_date') }}" title="تاريخ الاستحقاق">
+    </div>
+    <div class="col-md-3"><button class="btn btn-primary btn-sm w-100"><i class="bi bi-filter"></i> بحث</button></div>
 </form>
 </div>
 <div class="card">

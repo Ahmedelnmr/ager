@@ -20,6 +20,7 @@ class RentScheduleController extends Controller
         if ($request->filled('status'))      $query->where('status', $request->status);
         if ($request->filled('contract_id')) $query->where('contract_id', $request->contract_id);
         if ($request->filled('month'))       $query->where('period_label', $request->month);
+        if ($request->filled('due_date'))    $query->whereDate('due_date', $request->due_date);
         $schedules = $query->paginate(20)->appends($request->query());
         return view('rent-schedules.index', compact('schedules'));
     }
