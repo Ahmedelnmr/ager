@@ -51,7 +51,7 @@
                 @forelse($units as $u)
                 <tr>
                     <td>{{ $u->id }}</td>
-                    <td>{{ $u->building->name }}</td>
+                    <td>{{ $u->building?->name ?? '—' }}</td>
                     <td><a href="{{ route('units.show', $u) }}" class="fw-semibold text-decoration-none">{{ $u->unit_number }}</a></td>
                     <td>{{ $u->floor ?? '—' }}</td>
                     <td>{{ ['residential'=>'سكني','commercial'=>'تجاري','office'=>'مكتبي'][$u->type] ?? $u->type }}</td>

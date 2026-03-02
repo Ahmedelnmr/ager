@@ -30,8 +30,8 @@
                 @forelse($contracts as $c)
                 <tr>
                     <td>{{ $c->id }}</td>
-                    <td><a href="{{ route('tenants.show', $c->tenant) }}" class="text-decoration-none fw-semibold">{{ $c->tenant->name }}</a></td>
-                    <td>{{ $c->unit->building->name }} / <strong>{{ $c->unit->unit_number }}</strong></td>
+                    <td><a href="{{ route('tenants.show', $c->tenant) }}" class="text-decoration-none fw-semibold">{{ $c->tenant?->name ?? '—' }}</a></td>
+                    <td>{{ $c->unit?->building?->name ?? '—' }} / <strong>{{ $c->unit?->unit_number ?? '—' }}</strong></td>
                     <td>{{ $c->start_date->format('Y-m-d') }}</td>
                     <td class="{{ $c->end_date->isPast() && $c->status=='active' ? 'text-danger fw-semibold' : '' }}">{{ $c->end_date->format('Y-m-d') }}</td>
                     <td>{{ number_format($c->base_rent) }} ج.م</td>
