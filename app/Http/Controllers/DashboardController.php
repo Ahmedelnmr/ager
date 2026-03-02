@@ -13,6 +13,9 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Run overdue marking instantly on dashboard load too
+        app(\App\Services\LatePenaltyService::class)->processOverdue();
+
         $totalBuildings   = Building::count();
         $totalUnits       = Unit::count();
         $rentedUnits      = Unit::where('status', 'rented')->count();
@@ -22,16 +25,14 @@ class DashboardController extends Controller
         // Contracts ending soon (next 30 days)
         $endingSoon = Contract::endingSoon(30)->with(['tenant', 'unit.building'])->get();
 
-        // Overdue schedules
-        $overdueSchedules = RentSchedule::where('status', 'overdue')
-            ->with(['contract.tenant', 'contract.unit'])
-            ->count();
-
-        $overdueTotal = RentSchedule::where('status', 'overdue')->sum('final_amount')
-            - RentSchedule::where('status', 'overdue')->sum('paid_amount');
+        // Overdue schedules — unpaid balance only
+        $overdueRow = RentSchedule::where('status', 'overdue')
+            ->selectRaw('COUNT(*) as cnt, SUM(final_amount - paid_amount) as balance')
+            ->first();
+        $overdueSchedules = (int) ($overdueRow->cnt ?? 0);
+        $overdueTotal     = (float) ($overdueRow->balance ?? 0);
 
         // This month income
-        $thisMonth = now()->format('Y-m');
         $monthlyIncome = Payment::whereYear('payment_date', now()->year)
             ->whereMonth('payment_date', now()->month)
             ->sum('amount');
@@ -55,4 +56,5 @@ class DashboardController extends Controller
             'monthlyIncome', 'monthlyChart'
         ));
     }
+
 }

@@ -11,6 +11,7 @@ use App\Services\LatePenaltyService;
 use App\Services\PaymentService;
 use App\Services\NotificationService;
 use Carbon\Carbon;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Use Bootstrap 5 for pagination
+        Paginator::useBootstrapFive();
+
         // Set Carbon locale for Arabic dates
         Carbon::setLocale('ar');
 

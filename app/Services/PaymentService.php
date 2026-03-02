@@ -36,10 +36,11 @@ class PaymentService
             $newPaid = (float) $schedule->paid_amount + (float) $data['amount'];
             $final   = (float) $schedule->final_amount;
 
-            $status = 'partial';
-            if ($newPaid >= $final) {
-                $status = 'paid';
-            }
+            $status = match(true) {
+                $newPaid >= $final                   => 'paid',
+                $schedule->status === 'overdue'       => 'overdue',  // keep overdue status until fully paid
+                default                              => 'partial',
+            };
 
             $schedule->update([
                 'paid_amount' => $newPaid,

@@ -4,12 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\RentSchedule;
 use App\Models\Contract;
+use App\Services\LatePenaltyService;
 use Illuminate\Http\Request;
 
 class RentScheduleController extends Controller
 {
     public function index(Request $request)
     {
+        // ── Real-time overdue marking ──────────────────────────────
+        // Mark any schedule past its due_date (due or partial) as overdue instantly.
+        // This runs on every page load so we don't wait for the daily scheduler.
+        app(LatePenaltyService::class)->processOverdue();
+
         $query = RentSchedule::with(['contract.tenant', 'contract.unit.building'])->latest('due_date');
         if ($request->filled('status'))      $query->where('status', $request->status);
         if ($request->filled('contract_id')) $query->where('contract_id', $request->contract_id);
