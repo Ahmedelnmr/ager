@@ -15,3 +15,9 @@ Artisan::command('inspire', function () {
 Schedule::job(new MarkOverdueSchedulesJob)->dailyAt('08:00');
 Schedule::job(new GenerateContractEndingNotificationsJob)->dailyAt('08:05');
 Schedule::job(new SendDailyRentRemindersJob)->dailyAt('08:10'); // Rent due today + overdue reminders
+
+// Auto-expire contracts whose end_date has passed and set unit to vacant
+Schedule::call(function () {
+    app(\App\Services\ContractService::class)->autoExpireContracts();
+})->dailyAt('08:15')->name('auto-expire-contracts');
+

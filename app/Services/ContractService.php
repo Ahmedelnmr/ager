@@ -18,10 +18,24 @@ class ContractService
 
     /**
      * Create a contract and auto-generate RentSchedules.
+     * Throws \RuntimeException if the unit already has an active contract.
      */
     public function create(array $data): Contract
     {
         return DB::transaction(function () use ($data) {
+            // ── Guard: prevent double-booking ──────────────────────────────
+            $alreadyRented = Contract::where('unit_id', $data['unit_id'])
+                ->where('status', 'active')
+                ->exists();
+
+            if ($alreadyRented) {
+                $unit = Unit::find($data['unit_id']);
+                throw new \RuntimeException(
+                    "الوحدة «{$unit?->unit_number}» مؤجرة بالفعل بعقد نشط. "
+                    . "يرجى إنهاء العقد الحالي أولاً قبل إنشاء عقد جديد."
+                );
+            }
+
             $contract = Contract::create($data);
 
             // Mark unit as rented
@@ -69,6 +83,31 @@ class ContractService
             ]);
             return $contract;
         });
+    }
+
+    /**
+     * Auto-expire contracts whose end_date has passed.
+     * Sets contract status to 'expired' and unit status to 'vacant'.
+     * Called daily by the scheduler.
+     */
+    public function autoExpireContracts(): int
+    {
+        $count = 0;
+        $expired = Contract::where('status', 'active')
+            ->where('end_date', '<', now()->startOfDay())
+            ->with('unit')
+            ->get();
+
+        foreach ($expired as $contract) {
+            DB::transaction(function () use ($contract) {
+                $contract->update(['status' => 'expired']);
+                $contract->unit?->update(['status' => 'vacant']);
+                $this->audit($contract, 'auto_expired');
+            });
+            $count++;
+        }
+
+        return $count;
     }
 
     private function audit(Contract $contract, string $action, array $old = []): void

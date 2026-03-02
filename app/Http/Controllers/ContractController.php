@@ -62,7 +62,12 @@ class ContractController extends Controller
         if (!empty($settings)) $data['settings'] = $settings;
         unset($data['partial_refund_type'], $data['partial_refund_value']);
 
-        $contract = $this->contractService->create($data);
+        try {
+            $contract = $this->contractService->create($data);
+        } catch (\RuntimeException $e) {
+            return back()->withInput()->with('error', $e->getMessage());
+        }
+
         return redirect()->route('contracts.show', $contract)
             ->with('success', 'تم إنشاء العقد وتوليد جدول الاستحقاقات بنجاح.');
     }
