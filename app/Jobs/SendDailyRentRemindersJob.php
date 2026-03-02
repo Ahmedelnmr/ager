@@ -34,11 +34,12 @@ class SendDailyRentRemindersJob implements ShouldQueue
                 ' (' . number_format((float)$s->final_amount - (float)$s->paid_amount) . ' ج.م)'
             )->implode('، ');
 
+            $formattedDate = $today->format('Y-m-d');
             $svc->notifyRoles(['owner','admin','accountant'], 'custom', [
-                'title'   => "📅 استحقاق إيجار اليوم — {$dueToday->count()} مستأجر",
+                'title'   => "📅 استحقاق إيجار اليوم ({$formattedDate}) — {$dueToday->count()} مستأجر",
                 'message' => $names,
                 'count'   => $dueToday->count(),
-                'url'     => url('/rent-schedules?status=due'),
+                'url'     => url("/rent-schedules?status=due&due_date={$formattedDate}"),
             ]);
         }
 
