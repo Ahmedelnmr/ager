@@ -17,12 +17,13 @@
             <i class="bi bi-bell-fill"></i>
         </div>
         <div class="flex-grow-1">
-            <div class="{{ $n->is_read ? 'text-muted' : 'fw-semibold' }}">{{ $n->message }}</div>
-            <div class="text-muted small">{{ $n->created_at->diffForHumans() }}</div>
+            <div class="{{ $n->is_read ? 'text-muted' : 'fw-semibold' }}">{{ $n->payload['title'] ?? 'إشعار' }}</div>
+            <div class="{{ $n->is_read ? 'text-muted' : '' }} small">{{ $n->payload['message'] ?? '' }}</div>
+            <div class="text-muted small mt-1">{{ $n->created_at->diffForHumans() }}</div>
         </div>
         <div class="d-flex gap-1 align-items-center ms-3">
-            @if($n->link)
-            <a href="{{ $n->link }}" class="btn btn-xs btn-sm btn-outline-primary py-0 px-2">عرض</a>
+            @if(isset($n->payload['url']) || isset($n->payload['link']))
+            <a href="{{ $n->payload['url'] ?? $n->payload['link'] }}" class="btn btn-xs btn-sm btn-outline-primary py-0 px-2">عرض</a>
             @endif
             @if(!$n->is_read)
             <form method="POST" action="{{ route('notifications.mark-read', $n) }}">@csrf @method('PATCH')
