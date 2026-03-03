@@ -4,7 +4,7 @@
 @section('content')
 <div class="row justify-content-center"><div class="col-lg-6">
 <div class="card">
-    <div class="card-header">بيانات المستخدم</div>
+    <div class="card-header fw-semibold"><i class="bi bi-person-plus me-2 text-primary"></i>بيانات المستخدم</div>
     <div class="card-body">
         <form method="POST" action="{{ route('users.store') }}">
         @csrf
@@ -22,16 +22,12 @@
                 <input type="password" name="password" class="form-control" required>
             </div>
             <div class="col-12">
-                <label class="form-label fw-semibold">الهاتف</label>
-                <input type="text" name="phone" class="form-control" value="{{ old('phone') }}">
+                <label class="form-label fw-semibold">تأكيد كلمة المرور <span class="text-danger">*</span></label>
+                <input type="password" name="password_confirmation" class="form-control" required>
             </div>
             <div class="col-12">
-                <label class="form-label fw-semibold">الدور <span class="text-danger">*</span></label>
-                <select name="role" class="form-select" required>
-                    @foreach($roles as $role)
-                    <option value="{{ $role->name }}">{{ $role->name }}</option>
-                    @endforeach
-                </select>
+                <label class="form-label fw-semibold">الهاتف</label>
+                <input type="text" name="phone" class="form-control" value="{{ old('phone') }}">
             </div>
         </div>
         <div class="d-flex gap-2 mt-4">
