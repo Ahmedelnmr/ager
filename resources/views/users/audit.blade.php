@@ -33,10 +33,31 @@
                 @forelse($logs as $log)
                 <tr>
                     <td>
-                        <span class="badge bg-light text-dark border px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.85rem">
-                            <i class="bi bi-activity text-primary me-1"></i>
-                            {{ $actionTranslations[$log->action] ?? $log->action }}
-                        </span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill shadow-sm" style="font-size: 0.85rem; min-width: 140px; text-align: right;">
+                                <i class="bi bi-activity text-primary me-1"></i>
+                                {{ $actionTranslations[$log->action] ?? $log->action }}
+                            </span>
+                            @if($log->subject)
+                                <span class="text-muted small">
+                                    @if(str_contains($log->action, 'tenant.'))
+                                        (المستأجر: {{ $log->subject->name ?? 'غير معروف' }})
+                                    @elseif(str_contains($log->action, 'unit.'))
+                                        (الوحدة: {{ $log->subject->unit_number ?? 'غير معروف' }} - {{ $log->subject->building->name ?? '' }})
+                                    @elseif(str_contains($log->action, 'building.'))
+                                        (المبنى: {{ $log->subject->name ?? 'غير معروف' }})
+                                    @elseif(str_contains($log->action, 'contract.'))
+                                        (عقد المستأجر: {{ $log->subject->tenant->name ?? 'غير معروف' }} - الوحدة {{ $log->subject->unit->unit_number ?? '' }})
+                                    @elseif(str_contains($log->action, 'payment.'))
+                                        (تسديد من: {{ $log->subject->contract->tenant->name ?? 'غير معروف' }} - للإيجار رقم #{{ $log->subject->id ?? '' }})
+                                    @elseif(str_contains($log->action, 'user.'))
+                                        (المستخدم المالك: {{ $log->subject->name ?? 'غير معروف' }})
+                                    @else
+                                        (#{{ $log->model_id }})
+                                    @endif
+                                </span>
+                            @endif
+                        </div>
                     </td>
                     <td>
                         <div class="fw-semibold text-dark">
