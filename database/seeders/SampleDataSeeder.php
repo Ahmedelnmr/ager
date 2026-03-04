@@ -21,7 +21,7 @@ class SampleDataSeeder extends Seeder
             'city'    => 'الرياض',
             'notes'   => 'مبنى سكني متعدد الطوابق',
             'settings' => [
-                'currency'              => 'ريال',
+                'currency'              => 'ج.م',
                 'late_penalty_type'     => 'percent',
                 'late_penalty_value'    => 5,
                 'annual_increase_default' => 5,
@@ -34,7 +34,7 @@ class SampleDataSeeder extends Seeder
             'city'    => 'الرياض',
             'notes'   => 'مبنى تجاري',
             'settings' => [
-                'currency'              => 'ريال',
+                'currency'              => 'ج.م',
                 'late_penalty_type'     => 'fixed',
                 'late_penalty_value'    => 500,
                 'annual_increase_default' => 3,

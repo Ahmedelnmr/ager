@@ -8,8 +8,8 @@
     <div class="row g-2">
         <div class="col-6"><span class="text-muted small">المستأجر:</span> <strong>{{ $schedule->contract->tenant->name }}</strong></div>
         <div class="col-6"><span class="text-muted small">الوحدة:</span> <strong>{{ $schedule->contract->unit->building->name }} / {{ $schedule->contract->unit->unit_number }}</strong></div>
-        <div class="col-6"><span class="text-muted small">الإجمالي المطلوب:</span> <strong class="text-primary">{{ number_format($schedule->final_amount) }} ريال</strong></div>
-        <div class="col-6"><span class="text-muted small">المتبقي:</span> <strong class="text-danger">{{ number_format($schedule->remaining_amount) }} ريال</strong></div>
+        <div class="col-6"><span class="text-muted small">الإجمالي المطلوب:</span> <strong class="text-primary">{{ number_format($schedule->final_amount) }} ج.م</strong></div>
+        <div class="col-6"><span class="text-muted small">المتبقي:</span> <strong class="text-danger">{{ number_format($schedule->remaining_amount) }} ج.م</strong></div>
     </div>
 </div>
 
@@ -20,7 +20,7 @@
         @csrf
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label fw-semibold">المبلغ (ريال) <span class="text-danger">*</span></label>
+                <label class="form-label fw-semibold">المبلغ (ج.م) <span class="text-danger">*</span></label>
                 <input type="number" name="amount" class="form-control @error('amount') is-invalid @enderror"
                     value="{{ old('amount', $schedule->remaining_amount) }}" step="0.01" min="0.01" max="{{ $schedule->remaining_amount }}" required>
                 @error('amount')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror

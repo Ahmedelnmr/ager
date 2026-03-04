@@ -17,7 +17,7 @@
                     <td>{{ Str::limit($r->description, 60) }}</td>
                     <td>{{ $r->reported_by ?? '—' }}</td>
                     <td><span class="badge badge-{{ $r->status }} px-2 rounded-pill">{{ ['pending'=>'معلق','in_progress'=>'جاري','completed'=>'مكتمل','cancelled'=>'ملغي'][$r->status] }}</span></td>
-                    <td>{{ $r->cost ? number_format($r->cost) . ' ريال' : '—' }}</td>
+                    <td>{{ $r->cost ? number_format($r->cost) . ' ج.م' : '—' }}</td>
                     <td>{{ $r->created_at->format('Y-m-d') }}</td>
                     <td>
                         <a href="{{ route('maintenance.edit', $r) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>

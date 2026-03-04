@@ -50,7 +50,7 @@
                 <input type="number" name="due_day" class="form-control" value="{{ old('due_day', $contract->due_day) }}" min="1" max="31">
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">التأمين (ريال)</label>
+                <label class="form-label fw-semibold">التأمين (ج.م)</label>
                 <input type="number" name="security_deposit_amount" class="form-control" value="{{ old('security_deposit_amount', $contract->security_deposit_amount) }}" step="0.01">
             </div>
             <div class="col-md-6">

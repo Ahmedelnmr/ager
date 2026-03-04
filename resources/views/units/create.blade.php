@@ -45,7 +45,7 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">الإيجار الأساسي (ريال) <span class="text-danger">*</span></label>
+                <label class="form-label fw-semibold">الإيجار الأساسي (ج.م) <span class="text-danger">*</span></label>
                 <input type="number" name="base_rent" class="form-control @error('base_rent') is-invalid @enderror" value="{{ old('base_rent', 0) }}" step="0.01" min="0" required>
                 @error('base_rent')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>

@@ -22,7 +22,7 @@
                 <tr><td class="text-muted">الطابق</td><td>{{ $unit->floor ?? '—' }}</td></tr>
                 <tr><td class="text-muted">النوع</td><td>{{ ['residential'=>'سكني','commercial'=>'تجاري','office'=>'مكتب'][$unit->type] ?? $unit->type }}</td></tr>
                 <tr><td class="text-muted">الحالة</td><td><span class="badge badge-{{ $unit->status }}">{{ ['vacant'=>'شاغرة','rented'=>'مؤجرة','maintenance'=>'صيانة'][$unit->status] }}</span></td></tr>
-                <tr><td class="text-muted">الإيجار</td><td class="fw-semibold">{{ number_format($unit->base_rent) }} ريال</td></tr>
+                <tr><td class="text-muted">الإيجار</td><td class="fw-semibold">{{ number_format($unit->base_rent) }} ج.م</td></tr>
                 <tr><td class="text-muted">المساحة</td><td>{{ $unit->size ? $unit->size . ' م²' : '—' }}</td></tr>
             </table>
         </div>

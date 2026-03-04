@@ -55,10 +55,10 @@
 @if(isset($summary))
 <div class="row g-3">
     <div class="col-md-3">
-        <div class="card p-3 text-center"><div class="text-muted small">إجمالي المدفوعات (الشهر)</div><div class="fw-bold fs-5 text-success">{{ number_format($summary['total_payments']) }} ريال</div></div>
+        <div class="card p-3 text-center"><div class="text-muted small">إجمالي المدفوعات (الشهر)</div><div class="fw-bold fs-5 text-success">{{ number_format($summary['total_payments']) }} ج.م</div></div>
     </div>
     <div class="col-md-3">
-        <div class="card p-3 text-center"><div class="text-muted small">إجمالي المتأخرات</div><div class="fw-bold fs-5 text-danger">{{ number_format($summary['total_overdue']) }} ريال</div></div>
+        <div class="card p-3 text-center"><div class="text-muted small">إجمالي المتأخرات</div><div class="fw-bold fs-5 text-danger">{{ number_format($summary['total_overdue']) }} ج.م</div></div>
     </div>
     <div class="col-md-3">
         <div class="card p-3 text-center"><div class="text-muted small">عقود نشطة</div><div class="fw-bold fs-5">{{ $summary['active_contracts'] }}</div></div>

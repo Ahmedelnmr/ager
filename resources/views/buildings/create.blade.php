@@ -50,7 +50,7 @@
             </div>
             <div class="col-md-4">
                 <label class="form-label fw-semibold">العملة</label>
-                <input type="text" name="settings[currency]" class="form-control" value="ريال">
+                <input type="text" name="settings[currency]" class="form-control" value="ج.م">
             </div>
         </div>
 

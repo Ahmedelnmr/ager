@@ -30,7 +30,7 @@
                 <input type="text" name="reported_by" class="form-control" value="{{ old('reported_by', $maintenance->reported_by) }}">
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">التكلفة (ريال)</label>
+                <label class="form-label fw-semibold">التكلفة (ج.م)</label>
                 <input type="number" name="cost" class="form-control" value="{{ old('cost', $maintenance->cost) }}" step="0.01" min="0">
             </div>
             <div class="col-12">

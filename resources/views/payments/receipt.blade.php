@@ -21,7 +21,7 @@
         </div>
         <div class="bg-primary text-white rounded p-3 text-center mb-3">
             <div class="small text-white-50">المبلغ المستلم</div>
-            <div class="fw-bold display-6">{{ number_format($payment->amount) }} ريال</div>
+            <div class="fw-bold display-6">{{ number_format($payment->amount) }} ج.م</div>
         </div>
         @if($payment->notes)
         <p class="text-muted small"><strong>ملاحظات:</strong> {{ $payment->notes }}</p>

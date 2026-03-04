@@ -44,7 +44,7 @@
 
 <div class="amount-box">
     <div class="label">المبلغ المستلم</div>
-    <div class="amount">{{ number_format($payment->amount, 2) }} ريال</div>
+    <div class="amount">{{ number_format($payment->amount, 2) }} ج.م</div>
 </div>
 
 @if($payment->notes)

@@ -42,7 +42,7 @@
                 </select>
             </div>
             <div class="col-md-6">
-                <label class="form-label fw-semibold">الإيجار الأساسي (ريال)</label>
+                <label class="form-label fw-semibold">الإيجار الأساسي (ج.م)</label>
                 <input type="number" name="base_rent" class="form-control" value="{{ old('base_rent', $unit->base_rent) }}" step="0.01" min="0" required>
             </div>
             <div class="col-md-6">

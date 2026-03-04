@@ -65,7 +65,7 @@
                     <td>{{ $unit->floor ?? '—' }}</td>
                     <td>{{ ['residential'=>'سكني','commercial'=>'تجاري','office'=>'مكتبي'][$unit->type] ?? $unit->type }}</td>
                     <td><span class="badge badge-{{ $unit->status }} px-2 py-1 rounded-pill">{{ ['vacant'=>'شاغرة','rented'=>'مؤجرة','maintenance'=>'صيانة'][$unit->status] ?? $unit->status }}</span></td>
-                    <td>{{ number_format($unit->base_rent) }} ريال</td>
+                    <td>{{ number_format($unit->base_rent) }} ج.م</td>
                     <td>{{ $unit->activeContract?->tenant?->name ?? '—' }}</td>
                     <td><a href="{{ route('units.show', $unit) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
                 </tr>

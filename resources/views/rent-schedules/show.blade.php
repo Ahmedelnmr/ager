@@ -16,19 +16,19 @@
                 <tr><td class="text-muted">المستأجر</td><td><strong>{{ $rentSchedule->contract->tenant->name }}</strong></td></tr>
                 <tr><td class="text-muted">الوحدة</td><td>{{ $rentSchedule->contract->unit->building->name }} / {{ $rentSchedule->contract->unit->unit_number }}</td></tr>
                 <tr><td class="text-muted">تاريخ الاستحقاق</td><td>{{ $rentSchedule->due_date->format('Y-m-d') }}</td></tr>
-                <tr><td class="text-muted">المبلغ الأساسي</td><td>{{ number_format($rentSchedule->base_amount) }} ريال</td></tr>
-                <tr><td class="text-muted">الغرامة</td><td class="text-danger">{{ number_format($rentSchedule->penalty_amount) }} ريال</td></tr>
-                <tr><td class="text-muted">الخصم</td><td class="text-success">{{ number_format($rentSchedule->discount_amount) }} ريال</td></tr>
-                <tr><td class="text-muted">الإجمالي</td><td><strong class="text-primary">{{ number_format($rentSchedule->final_amount) }} ريال</strong></td></tr>
-                <tr><td class="text-muted">المدفوع</td><td class="text-success">{{ number_format($rentSchedule->paid_amount) }} ريال</td></tr>
-                <tr><td class="text-muted">المتبقي</td><td class="{{ $rentSchedule->remaining_amount > 0 ? 'text-danger fw-bold' : 'text-success' }}">{{ number_format($rentSchedule->remaining_amount) }} ريال</td></tr>
+                <tr><td class="text-muted">المبلغ الأساسي</td><td>{{ number_format($rentSchedule->base_amount) }} ج.م</td></tr>
+                <tr><td class="text-muted">الغرامة</td><td class="text-danger">{{ number_format($rentSchedule->penalty_amount) }} ج.م</td></tr>
+                <tr><td class="text-muted">الخصم</td><td class="text-success">{{ number_format($rentSchedule->discount_amount) }} ج.م</td></tr>
+                <tr><td class="text-muted">الإجمالي</td><td><strong class="text-primary">{{ number_format($rentSchedule->final_amount) }} ج.م</strong></td></tr>
+                <tr><td class="text-muted">المدفوع</td><td class="text-success">{{ number_format($rentSchedule->paid_amount) }} ج.م</td></tr>
+                <tr><td class="text-muted">المتبقي</td><td class="{{ $rentSchedule->remaining_amount > 0 ? 'text-danger fw-bold' : 'text-success' }}">{{ number_format($rentSchedule->remaining_amount) }} ج.م</td></tr>
                 <tr><td class="text-muted">الحالة</td><td><span class="badge badge-{{ $rentSchedule->status }} px-2 rounded-pill">{{ ['due'=>'مستحق','paid'=>'مدفوع','partial'=>'جزئي','overdue'=>'متأخر'][$rentSchedule->status] }}</span></td></tr>
             </table>
             <!-- Discount adjustment form -->
             <hr>
             <form method="POST" action="{{ route('rent-schedules.update', $rentSchedule) }}">
                 @csrf @method('PATCH')
-                <label class="form-label small fw-semibold">تعديل الخصم (ريال)</label>
+                <label class="form-label small fw-semibold">تعديل الخصم (ج.م)</label>
                 <div class="input-group input-group-sm">
                     <input type="number" name="discount_amount" class="form-control" value="{{ $rentSchedule->discount_amount }}" step="0.01" min="0">
                     <button class="btn btn-outline-warning">تطبيق</button>

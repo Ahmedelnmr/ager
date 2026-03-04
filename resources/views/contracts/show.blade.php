@@ -36,8 +36,8 @@
             <table class="table table-borderless table-sm mb-0">
                 <tr><td class="text-muted">التأمين</td><td>{{ number_format($contract->security_deposit_amount) }} ج.م</td></tr>
                 <tr><td class="text-muted">سياسة التأمين</td><td>{{ ['refundable'=>'قابل للاسترداد','deduct_last_month'=>'خصم من آخر شهر','non_refundable'=>'غير مسترد','partial'=>'استرداد جزئي'][$contract->deposit_policy] }}</td></tr>
-                <tr><td class="text-muted">الزيادة السنوية</td><td>{{ $contract->annual_increase_type === 'none' ? 'لا يوجد' : ($contract->annual_increase_value . ($contract->annual_increase_type === 'percent' ? '٪' : ' ريال')) }}</td></tr>
-                <tr><td class="text-muted">غرامة التأخير</td><td>{{ $contract->late_penalty_type === 'none' ? 'لا يوجد' : ($contract->late_penalty_value . ($contract->late_penalty_type === 'percent' ? '٪' : ' ريال')) }}</td></tr>
+                <tr><td class="text-muted">الزيادة السنوية</td><td>{{ $contract->annual_increase_type === 'none' ? 'لا يوجد' : ($contract->annual_increase_value . ($contract->annual_increase_type === 'percent' ? '٪' : ' ج.م')) }}</td></tr>
+                <tr><td class="text-muted">غرامة التأخير</td><td>{{ $contract->late_penalty_type === 'none' ? 'لا يوجد' : ($contract->late_penalty_value . ($contract->late_penalty_type === 'percent' ? '٪' : ' ج.م')) }}</td></tr>
                 @if($contract->early_termination_policy)
                 <tr><td class="text-muted">الإنهاء المبكر</td><td><small>{{ $contract->early_termination_policy }}</small></td></tr>
                 @endif
