@@ -28,6 +28,16 @@ class ContractsExport implements FromQuery, WithHeadings, WithMapping, WithTitle
 
     public function map($contract): array
     {
+        $statuses = [
+            'active'     => 'نشط',
+            'expired'    => 'منتهي',
+            'terminated' => 'منهي مبكرًا',
+        ];
+        $cycles = [
+            'monthly'   => 'شهري',
+            'quarterly' => 'ربع سنوي',
+            'yearly'    => 'سنوي',
+        ];
         return [
             $contract->id,
             $contract->tenant->name,
@@ -35,9 +45,9 @@ class ContractsExport implements FromQuery, WithHeadings, WithMapping, WithTitle
             $contract->unit->unit_number,
             $contract->start_date->format('Y-m-d'),
             $contract->end_date->format('Y-m-d'),
-            $contract->base_rent,
-            $contract->payment_cycle,
-            $contract->status,
+            number_format($contract->base_rent, 2),
+            $cycles[$contract->payment_cycle] ?? $contract->payment_cycle,
+            $statuses[$contract->status] ?? $contract->status,
         ];
     }
 }

@@ -30,14 +30,20 @@ class PaymentsExport implements FromQuery, WithHeadings, WithMapping, WithTitle
 
     public function map($payment): array
     {
+        $methods = [
+            'cash'          => 'نقدًا',
+            'bank_transfer' => 'تحويل بنكي',
+            'check'         => 'شيك',
+            'online'        => 'أونلاين',
+        ];
         return [
             $payment->rentSchedule?->receipt_number ?? $payment->id,
             $payment->contract->tenant->name,
             $payment->contract->unit->building->name,
             $payment->contract->unit->unit_number,
             $payment->rentSchedule?->period_label,
-            $payment->amount,
-            $payment->payment_method,
+            number_format($payment->amount, 2),
+            $methods[$payment->payment_method] ?? $payment->payment_method,
             $payment->payment_date->format('Y-m-d'),
         ];
     }
