@@ -22,8 +22,8 @@
             <div class="col-md-6">
                 <label class="form-label fw-semibold">المبلغ (ريال) <span class="text-danger">*</span></label>
                 <input type="number" name="amount" class="form-control @error('amount') is-invalid @enderror"
-                    value="{{ old('amount', $schedule->remaining_amount) }}" step="0.01" min="0.01" required>
-                @error('amount')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    value="{{ old('amount', $schedule->remaining_amount) }}" step="0.01" min="0.01" max="{{ $schedule->remaining_amount }}" required>
+                @error('amount')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
             </div>
             <div class="col-md-6">
                 <label class="form-label fw-semibold">طريقة الدفع</label>
