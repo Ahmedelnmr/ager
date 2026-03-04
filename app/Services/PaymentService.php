@@ -46,7 +46,7 @@ class PaymentService
                 'paid_amount' => $newPaid,
                 'status'      => $status,
                 'paid_at'     => $status === 'paid' ? now() : $schedule->paid_at,
-                'receipt_number' => $data['receipt_number'] ?? ('RCP-' . str_pad($payment->id, 6, '0', STR_PAD_LEFT)),
+                'receipt_number' => $data['receipt_number'] ?? ('RCP-' . str_pad((string) $payment->id, 6, '0', STR_PAD_LEFT)),
             ]);
 
             AuditLog::create([

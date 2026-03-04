@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Contract;
+use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -14,7 +15,8 @@ class ContractsExport implements FromQuery, WithHeadings, WithMapping, WithTitle
 
     public function title(): string { return 'العقود'; }
 
-    public function query()
+    /** @return Builder<Contract> */
+    public function query(): Builder
     {
         $query = Contract::with(['tenant', 'unit.building'])->latest();
         if (!empty($this->filters['status'])) $query->where('status', $this->filters['status']);

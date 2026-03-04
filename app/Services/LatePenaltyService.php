@@ -32,8 +32,12 @@ class LatePenaltyService
      */
     public function applyPenalty(RentSchedule $schedule): void
     {
+        /** @var Contract|null $contract */
         $contract = $schedule->contract;
-        $penalty  = $this->calculatePenalty($contract, $schedule->base_amount);
+        if (!$contract) {
+            return;
+        }
+        $penalty  = $this->calculatePenalty($contract, (float) $schedule->base_amount);
 
         $schedule->update([
             'status'         => 'overdue',

@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Payment;
+use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -14,7 +15,8 @@ class PaymentsExport implements FromQuery, WithHeadings, WithMapping, WithTitle
 
     public function title(): string { return 'المدفوعات'; }
 
-    public function query()
+    /** @return Builder<Payment> */
+    public function query(): Builder
     {
         $query = Payment::with(['contract.tenant', 'contract.unit.building', 'rentSchedule'])
             ->latest('payment_date');
@@ -37,7 +39,7 @@ class PaymentsExport implements FromQuery, WithHeadings, WithMapping, WithTitle
             'online'        => 'أونلاين',
         ];
         return [
-            $payment->rentSchedule?->receipt_number ?? $payment->id,
+            $payment->rentSchedule->receipt_number ?? $payment->id,
             $payment->contract->tenant->name,
             $payment->contract->unit->building->name,
             $payment->contract->unit->unit_number,
