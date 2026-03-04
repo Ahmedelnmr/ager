@@ -7,6 +7,7 @@ use App\Models\Contract;
 use App\Models\RentSchedule;
 use App\Models\Unit;
 use App\Models\Payment;
+use App\Models\MaintenanceRequest;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -50,10 +51,23 @@ class DashboardController extends Controller
             ]);
         }
 
+        // Maintenance expenses — current year
+        $maintenanceCostYear   = MaintenanceRequest::whereYear('created_at', now()->year)
+            ->whereNotNull('cost')->sum('cost');
+        $maintenanceCostMonth  = MaintenanceRequest::whereYear('created_at', now()->year)
+            ->whereMonth('created_at', now()->month)
+            ->whereNotNull('cost')->sum('cost');
+        $maintenanceOpen = MaintenanceRequest::whereIn('status', ['pending', 'in_progress'])->count();
+        // Recent open requests
+        $maintenanceRecent = MaintenanceRequest::with('unit.building')
+            ->whereIn('status', ['pending', 'in_progress'])
+            ->latest()->take(5)->get();
+
         return view('dashboard.index', compact(
             'totalBuildings', 'totalUnits', 'rentedUnits', 'vacantUnits',
             'activeContracts', 'endingSoon', 'overdueSchedules', 'overdueTotal',
-            'monthlyIncome', 'monthlyChart'
+            'monthlyIncome', 'monthlyChart',
+            'maintenanceCostYear', 'maintenanceCostMonth', 'maintenanceOpen', 'maintenanceRecent'
         ));
     }
 

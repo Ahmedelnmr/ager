@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\MaintenanceRequest;
+use App\Models\Building;
 use App\Models\Unit;
 use App\Models\Contract;
 use App\Http\Requests\StoreMaintenanceRequest as StoreMaintenanceForm;
@@ -12,10 +13,20 @@ class MaintenanceController extends Controller
 {
     public function index(Request $request)
     {
+        $buildings = Building::orderBy('name')->get();
+        $units     = collect();
+
         $query = MaintenanceRequest::with(['unit.building', 'assignedTo'])->latest();
-        if ($request->filled('status')) $query->where('status', $request->status);
+
+        if ($request->filled('status'))      $query->where('status', $request->status);
+        if ($request->filled('building_id')) {
+            $query->whereHas('unit', fn($q) => $q->where('building_id', $request->building_id));
+            $units = Unit::where('building_id', $request->building_id)->orderBy('unit_number')->get();
+        }
+        if ($request->filled('unit_id'))     $query->where('unit_id', $request->unit_id);
+
         $requests = $query->paginate(20)->appends($request->query());
-        return view('maintenance.index', compact('requests'));
+        return view('maintenance.index', compact('requests', 'buildings', 'units'));
     }
 
     public function create()

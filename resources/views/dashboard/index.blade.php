@@ -14,7 +14,7 @@
 
 <!-- KPI Cards -->
 <div class="row g-3 mb-4">
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl col-md-6">
         <div class="card kpi-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="kpi-icon" style="background:#dbeafe; color:#1e40af;"><i class="bi bi-cash-stack"></i></div>
@@ -25,7 +25,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl col-md-6">
         <div class="card kpi-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="kpi-icon" style="background:#fee2e2; color:#991b1b;"><i class="bi bi-exclamation-octagon-fill"></i></div>
@@ -37,7 +37,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl col-md-6">
         <div class="card kpi-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="kpi-icon" style="background:#d1fae5; color:#065f46;"><i class="bi bi-door-closed-fill"></i></div>
@@ -49,7 +49,7 @@
             </div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl col-md-6">
         <div class="card kpi-card h-100">
             <div class="card-body d-flex align-items-center gap-3">
                 <div class="kpi-icon" style="background:#fef3c7; color:#92400e;"><i class="bi bi-hourglass-split"></i></div>
@@ -57,6 +57,18 @@
                     <div class="text-muted small">عقود قرب الانتهاء</div>
                     <div class="fw-bold fs-5 text-warning">{{ $endingSoon->count() }}</div>
                     <div class="small text-muted">خلال 30 يوماً</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl col-md-6">
+        <div class="card kpi-card h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="kpi-icon" style="background:#ede9fe; color:#6d28d9;"><i class="bi bi-tools"></i></div>
+                <div>
+                    <div class="text-muted small">مصروفات الصيانة (الشهر)</div>
+                    <div class="fw-bold fs-5 text-purple" style="color:#6d28d9;">{{ number_format($maintenanceCostMonth, 0) }} ج.م</div>
+                    <div class="small text-muted">{{ $maintenanceOpen }} طلب مفتوح</div>
                 </div>
             </div>
         </div>
@@ -97,6 +109,59 @@
                 </div>
                 @empty
                 <div class="text-center text-muted py-4"><i class="bi bi-check-circle-fill fs-3 text-success d-block mb-2"></i> لا توجد عقود قرب الانتهاء</div>
+                @endforelse
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Maintenance Section --}}
+<div class="row g-3 mt-1">
+    {{-- Summary Card --}}
+    <div class="col-lg-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <span><i class="bi bi-tools me-2 text-purple" style="color:#6d28d9"></i> مصروفات الصيانة</span>
+                <a href="{{ route('maintenance.index') }}" class="btn btn-sm btn-outline-secondary">عرض الكل</a>
+            </div>
+            <div class="card-body">
+                <div class="row g-3 text-center">
+                    <div class="col-6">
+                        <div class="text-muted small">هذا الشهر</div>
+                        <div class="fw-bold fs-5" style="color:#6d28d9">{{ number_format($maintenanceCostMonth, 0) }} ج.م</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-muted small">هذه السنة</div>
+                        <div class="fw-bold fs-5" style="color:#6d28d9">{{ number_format($maintenanceCostYear, 0) }} ج.م</div>
+                    </div>
+                </div>
+                <hr class="my-2">
+                <div class="text-center">
+                    <span class="badge bg-warning text-dark px-3 py-2" style="font-size:.9rem">
+                        <i class="bi bi-exclamation-circle me-1"></i>{{ $maintenanceOpen }} طلب مفتوح
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{-- Recent Open Requests --}}
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><i class="bi bi-wrench-adjustable me-2 text-danger"></i>طلبات الصيانة المفتوحة</div>
+            <div class="card-body p-0">
+                @forelse($maintenanceRecent as $m)
+                <div class="d-flex align-items-start px-3 py-2 border-bottom">
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold small">{{ $m->unit->building->name }} / وحدة {{ $m->unit->unit_number }}</div>
+                        <div class="text-muted" style="font-size:.78rem;">{{ Str::limit($m->description, 70) }}</div>
+                    </div>
+                    <div class="text-end ms-3 flex-shrink-0">
+                        <span class="badge badge-{{ $m->status }} px-2">{{ ['pending'=>'معلق','in_progress'=>'جاري'][$m->status] }}</span>
+                        <div style="font-size:.72rem;color:#aaa">{{ $m->created_at->format('Y-m-d') }}</div>
+                    </div>
+                </div>
+                @empty
+                <div class="text-center text-muted py-4"><i class="bi bi-check-circle-fill fs-3 text-success d-block mb-2"></i>لا توجد طلبات مفتوحة</div>
                 @endforelse
             </div>
         </div>
