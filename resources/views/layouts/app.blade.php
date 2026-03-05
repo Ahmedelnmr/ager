@@ -23,8 +23,14 @@
             --bg-main:       #f0f4f8;
         }
         * { font-family: 'Cairo', sans-serif; }
-        html, body { overflow-x: hidden; max-width: 100%; }
-        body { background: var(--bg-main); min-height: 100vh; }
+        html, body { 
+            overflow-x: hidden !important; 
+            max-width: 100% !important; 
+            width: 100% !important; 
+            position: relative; 
+            -webkit-text-size-adjust: 100%;
+        }
+        body { background: var(--bg-main); min-height: 100vh; margin: 0; padding: 0; }
 
         /* Sidebar */
         #sidebar {
@@ -132,12 +138,18 @@
             body { position: relative; width: 100%; overflow-x: hidden !important; }
             #sidebar { transform: translateX(260px); transition: transform .3s; }
             #sidebar.open { transform: translateX(0); }
-            #main { margin-right: 0; width: 100%; max-width: 100vw; overflow-x: hidden; }
+            #main { 
+                margin-right: 0 !important; 
+                width: 100% !important; 
+                max-width: 100% !important; 
+                overflow-x: hidden !important; 
+                box-sizing: border-box;
+            }
             
             #topbar { padding: 0 0.8rem; flex-wrap: nowrap; }
             .page-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
             
-            .page-content { padding: 0.75rem; width: 100%; overflow-x: hidden; }
+            .page-content { padding: 0.5rem; width: 100% !important; max-width: 100% !important; box-sizing: border-box; overflow-x: hidden !important; }
             
             /* Card Fixes */
             .card { width: 100%; margin-left: 0; margin-right: 0; border-radius: 10px; }
