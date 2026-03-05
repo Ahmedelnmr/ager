@@ -22,13 +22,13 @@
             <tbody>
                 @forelse($buildings as $b)
                 <tr>
-                    <td>{{ $b->id }}</td>
-                    <td><a href="{{ route('buildings.show', $b) }}" class="fw-semibold text-decoration-none">{{ $b->name }}</a></td>
-                    <td>{{ $b->city ?? '—' }}</td>
-                    <td><span class="badge bg-secondary">{{ $b->units_count }}</span></td>
-                    <td><span class="badge badge-rented px-2 py-1 rounded-pill">{{ $b->active_units_count }}</span></td>
-                    <td><span class="badge badge-vacant px-2 py-1 rounded-pill">{{ $b->vacant_units_count }}</span></td>
-                    <td>
+                    <td data-label="#">{{ $b->id }}</td>
+                    <td data-label="اسم المبنى"><a href="{{ route('buildings.show', $b) }}" class="fw-semibold text-decoration-none">{{ $b->name }}</a></td>
+                    <td data-label="المدينة">{{ $b->city ?? '—' }}</td>
+                    <td data-label="إجمالي الوحدات"><span class="badge bg-secondary">{{ $b->units_count }}</span></td>
+                    <td data-label="مؤجرة"><span class="badge badge-rented px-2 py-1 rounded-pill">{{ $b->active_units_count }}</span></td>
+                    <td data-label="شاغرة"><span class="badge badge-vacant px-2 py-1 rounded-pill">{{ $b->vacant_units_count }}</span></td>
+                    <td data-label="الإجراءات">
                         <div class="d-flex gap-1">
                             <a href="{{ route('buildings.show', $b) }}" class="btn btn-sm btn-outline-primary" title="عرض"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('buildings.edit', $b) }}" class="btn btn-sm btn-outline-warning" title="تعديل"><i class="bi bi-pencil"></i></a>

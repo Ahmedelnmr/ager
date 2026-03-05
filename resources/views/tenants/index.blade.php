@@ -16,18 +16,18 @@
             <tbody>
                 @forelse($tenants as $t)
                 <tr>
-                    <td>{{ $t->id }}</td>
-                    <td>
+                    <td data-label="#">{{ $t->id }}</td>
+                    <td data-label="الاسم">
                         <div class="d-flex align-items-center gap-2">
                             <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width:36px;height:36px;background:#1a5276;font-size:.9rem;">{{ substr($t->name,0,1) }}</div>
                             <a href="{{ route('tenants.show', $t) }}" class="text-decoration-none fw-semibold">{{ $t->name }}</a>
                         </div>
                     </td>
-                    <td>{{ $t->national_id ?? '—' }}</td>
-                    <td>{{ $t->phone ?? '—' }}</td>
-                    <td>{{ $t->email ?? '—' }}</td>
-                    <td><span class="badge bg-primary rounded-pill">{{ $t->contracts_count }}</span></td>
-                    <td>
+                    <td data-label="رقم الهوية">{{ $t->national_id ?? '—' }}</td>
+                    <td data-label="الهاتف">{{ $t->phone ?? '—' }}</td>
+                    <td data-label="البريد">{{ $t->email ?? '—' }}</td>
+                    <td data-label="العقود"><span class="badge bg-primary rounded-pill">{{ $t->contracts_count }}</span></td>
+                    <td data-label="الإجراءات">
                         <div class="d-flex gap-1 flex-wrap">
                             <a href="{{ route('tenants.show', $t) }}" class="btn btn-sm btn-outline-primary" title="عرض الملف الشخصي">
                                 <i class="bi bi-eye me-1"></i>عرض

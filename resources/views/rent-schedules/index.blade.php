@@ -28,16 +28,16 @@
             <tbody>
                 @forelse($schedules as $s)
                 <tr class="{{ $s->status === 'overdue' ? 'table-danger' : '' }}">
-                    <td>{{ $s->period_label }}</td>
-                    <td>{{ $s->contract->tenant->name }}</td>
-                    <td>{{ $s->contract->unit->building->name }} / {{ $s->contract->unit->unit_number }}</td>
-                    <td>{{ $s->due_date->format('Y-m-d') }}</td>
-                    <td>{{ number_format($s->final_amount) }}</td>
-                    <td class="text-success">{{ number_format($s->paid_amount) }}</td>
-                    <td class="{{ $s->remaining_amount > 0 ? 'text-danger fw-semibold' : 'text-success' }}">{{ number_format($s->remaining_amount) }}</td>
-                    <td><span class="badge badge-{{ $s->status }} px-2 rounded-pill">{{ ['due'=>'مستحق','paid'=>'مدفوع','partial'=>'جزئي','overdue'=>'متأخر'][$s->status] }}</span></td>
-                    <td>
-                        <div class="d-flex gap-1">
+                    <td data-label="الفترة">{{ $s->period_label }}</td>
+                    <td data-label="المستأجر">{{ $s->contract->tenant->name }}</td>
+                    <td data-label="الوحدة">{{ $s->contract->unit->building->name }} / {{ $s->contract->unit->unit_number }}</td>
+                    <td data-label="تاريخ الاستحقاق">{{ $s->due_date->format('Y-m-d') }}</td>
+                    <td data-label="الإجمالي">{{ number_format($s->final_amount) }}</td>
+                    <td data-label="المدفوع" class="text-success">{{ number_format($s->paid_amount) }}</td>
+                    <td data-label="المتبقي" class="{{ $s->remaining_amount > 0 ? 'text-danger fw-semibold' : 'text-success' }}">{{ number_format($s->remaining_amount) }}</td>
+                    <td data-label="الحالة"><span class="badge badge-{{ $s->status }} px-2 rounded-pill">{{ ['due'=>'مستحق','paid'=>'مدفوع','partial'=>'جزئي','overdue'=>'متأخر'][$s->status] }}</span></td>
+                    <td data-label="الإجراءات">
+                        <div class="d-flex gap-1 justify-content-end">
                             @if($s->status !== 'paid')
                             <a href="{{ route('payments.create', $s) }}" class="btn btn-sm btn-success py-0 px-2" title="استلام دفعة"><i class="bi bi-cash"></i></a>
                             @endif

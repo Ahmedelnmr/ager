@@ -58,19 +58,21 @@
             <tbody>
                 @forelse($requests as $r)
                 <tr>
-                    <td>{{ $r->id }}</td>
-                    <td>{{ $r->unit->building->name }} / {{ $r->unit->unit_number }}</td>
-                    <td>{{ Str::limit($r->description, 60) }}</td>
-                    <td>{{ $r->reported_by ?? '—' }}</td>
-                    <td><span class="badge badge-{{ $r->status }} px-2 rounded-pill">{{ ['pending'=>'معلق','in_progress'=>'جاري','completed'=>'مكتمل','cancelled'=>'ملغي'][$r->status] }}</span></td>
-                    <td>{{ $r->cost ? number_format($r->cost) . ' ج.م' : '—' }}</td>
-                    <td>{{ $r->created_at->format('Y-m-d') }}</td>
-                    <td>
-                        <a href="{{ route('maintenance.show', $r) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
-                        <a href="{{ route('maintenance.edit', $r) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
-                        <form method="POST" action="{{ route('maintenance.destroy', $r) }}" class="d-inline" onsubmit="return confirm('حذف؟')">@csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
-                        </form>
+                    <td data-label="#">{{ $r->id }}</td>
+                    <td data-label="البرج / الوحدة">{{ $r->unit->building->name }} / {{ $r->unit->unit_number }}</td>
+                    <td data-label="الوصف">{{ Str::limit($r->description, 60) }}</td>
+                    <td data-label="البلاغ من">{{ $r->reported_by ?? '—' }}</td>
+                    <td data-label="الحالة"><span class="badge badge-{{ $r->status }} px-2 rounded-pill">{{ ['pending'=>'معلق','in_progress'=>'جاري','completed'=>'مكتمل','cancelled'=>'ملغي'][$r->status] }}</span></td>
+                    <td data-label="التكلفة">{{ $r->cost ? number_format($r->cost) . ' ج.م' : '—' }}</td>
+                    <td data-label="التاريخ">{{ $r->created_at->format('Y-m-d') }}</td>
+                    <td data-label="الإجراءات">
+                        <div class="d-flex gap-1 justify-content-end">
+                            <a href="{{ route('maintenance.show', $r) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                            <a href="{{ route('maintenance.edit', $r) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                            <form method="POST" action="{{ route('maintenance.destroy', $r) }}" class="d-inline" onsubmit="return confirm('حذف؟')">@csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 @empty

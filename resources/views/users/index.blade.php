@@ -12,12 +12,12 @@
             <tbody>
                 @forelse($users as $u)
                 <tr>
-                    <td>{{ $u->id }}</td>
-                    <td class="fw-semibold">{{ $u->name }}</td>
-                    <td class="text-muted">{{ $u->email }}</td>
-                    <td>{{ $u->phone ?? '—' }}</td>
-                    <td><span class="badge {{ $u->is_active ? 'badge-active' : 'badge-expired' }} px-2 rounded-pill">{{ $u->is_active ? 'نشط' : 'موقوف' }}</span></td>
-                    <td><a href="{{ route('users.edit', $u) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a></td>
+                    <td data-label="#">{{ $u->id }}</td>
+                    <td data-label="الاسم" class="fw-semibold">{{ $u->name }}</td>
+                    <td data-label="البريد" class="text-muted">{{ $u->email }}</td>
+                    <td data-label="الهاتف">{{ $u->phone ?? '—' }}</td>
+                    <td data-label="الحالة"><span class="badge {{ $u->is_active ? 'badge-active' : 'badge-expired' }} px-2 rounded-pill">{{ $u->is_active ? 'نشط' : 'موقوف' }}</span></td>
+                    <td data-label="الإجراءات"><a href="{{ route('users.edit', $u) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a></td>
                 </tr>
                 @empty
                 <tr><td colspan="6" class="text-center text-muted py-4">لا يوجد مستخدمون</td></tr>

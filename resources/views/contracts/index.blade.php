@@ -29,21 +29,21 @@
             <tbody>
                 @forelse($contracts as $c)
                 <tr>
-                    <td>{{ $c->id }}</td>
-                    <td><a href="{{ route('tenants.show', $c->tenant) }}" class="text-decoration-none fw-semibold">{{ $c->tenant?->name ?? '—' }}</a></td>
-                    <td>{{ $c->unit?->building?->name ?? '—' }} / <strong>{{ $c->unit?->unit_number ?? '—' }}</strong></td>
-                    <td>{{ $c->start_date->format('Y-m-d') }}</td>
-                    <td class="{{ $c->end_date->isPast() && $c->status=='active' ? 'text-danger fw-semibold' : '' }}">{{ $c->end_date->format('Y-m-d') }}</td>
-                    <td>{{ number_format($c->base_rent) }} ج.م</td>
-                    <td>{{ ['monthly'=>'شهري','quarterly'=>'ربع سنوي','yearly'=>'سنوي'][$c->payment_cycle] }}</td>
-                    <td>
+                    <td data-label="#">{{ $c->id }}</td>
+                    <td data-label="المستأجر"><a href="{{ route('tenants.show', $c->tenant) }}" class="text-decoration-none fw-semibold">{{ $c->tenant?->name ?? '—' }}</a></td>
+                    <td data-label="المبنى / الوحدة">{{ $c->unit?->building?->name ?? '—' }} / <strong>{{ $c->unit?->unit_number ?? '—' }}</strong></td>
+                    <td data-label="من">{{ $c->start_date->format('Y-m-d') }}</td>
+                    <td data-label="إلى" class="{{ $c->end_date->isPast() && $c->status=='active' ? 'text-danger fw-semibold' : '' }}">{{ $c->end_date->format('Y-m-d') }}</td>
+                    <td data-label="الإيجار">{{ number_format($c->base_rent) }} ج.م</td>
+                    <td data-label="الدورة">{{ ['monthly'=>'شهري','quarterly'=>'ربع سنوي','yearly'=>'سنوي'][$c->payment_cycle] }}</td>
+                    <td data-label="الحالة">
                         @if($c->status === 'active' && $c->end_date->isPast())
                             <span class="badge bg-warning text-dark px-2 py-1 rounded-pill">منتهي (يحتاج إنهاء)</span>
                         @else
                             <span class="badge badge-{{ $c->status }} px-2 py-1 rounded-pill">{{ ['active'=>'نشط','expired'=>'منتهي','terminated'=>'مُنهى'][$c->status] ?? $c->status }}</span>
                         @endif
                     </td>
-                    <td>
+                    <td data-label="الإجراءات">
                         <div class="d-flex gap-1 flex-wrap">
                             <a href="{{ route('contracts.show', $c) }}" class="btn btn-sm btn-outline-primary" title="عرض العقد">
                                 <i class="bi bi-eye me-1"></i>عرض

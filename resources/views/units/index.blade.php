@@ -50,15 +50,15 @@
             <tbody>
                 @forelse($units as $u)
                 <tr>
-                    <td>{{ $u->id }}</td>
-                    <td>{{ $u->building?->name ?? '—' }}</td>
-                    <td><a href="{{ route('units.show', $u) }}" class="fw-semibold text-decoration-none">{{ $u->unit_number }}</a></td>
-                    <td>{{ $u->floor ?? '—' }}</td>
-                    <td>{{ ['residential'=>'سكني','commercial'=>'تجاري','office'=>'مكتبي'][$u->type] ?? $u->type }}</td>
-                    <td><span class="badge badge-{{ $u->status }} px-2 py-1 rounded-pill">{{ ['vacant'=>'شاغرة','rented'=>'مؤجرة','maintenance'=>'صيانة'][$u->status] ?? $u->status }}</span></td>
-                    <td>{{ number_format($u->base_rent) }}</td>
-                    <td>{{ $u->size ?? '—' }}</td>
-                    <td>
+                    <td data-label="#">{{ $u->id }}</td>
+                    <td data-label="المبنى">{{ $u->building?->name ?? '—' }}</td>
+                    <td data-label="رقم الوحدة"><a href="{{ route('units.show', $u) }}" class="fw-semibold text-decoration-none">{{ $u->unit_number }}</a></td>
+                    <td data-label="الطابق">{{ $u->floor ?? '—' }}</td>
+                    <td data-label="النوع">{{ ['residential'=>'سكني','commercial'=>'تجاري','office'=>'مكتبي'][$u->type] ?? $u->type }}</td>
+                    <td data-label="الحالة"><span class="badge badge-{{ $u->status }} px-2 py-1 rounded-pill">{{ ['vacant'=>'شاغرة','rented'=>'مؤجرة','maintenance'=>'صيانة'][$u->status] ?? $u->status }}</span></td>
+                    <td data-label="الإيجار">{{ number_format($u->base_rent) }}</td>
+                    <td data-label="الحجم م²">{{ $u->size ?? '—' }}</td>
+                    <td data-label="الإجراءات">
                         <div class="d-flex gap-1">
                             <a href="{{ route('units.show', $u) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
                             <a href="{{ route('units.edit', $u) }}" class="btn btn-sm btn-outline-warning"><i class="bi bi-pencil"></i></a>

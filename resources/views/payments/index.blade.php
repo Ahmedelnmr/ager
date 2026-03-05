@@ -9,17 +9,17 @@
             <tbody>
                 @forelse($payments as $p)
                 <tr>
-                    <td>{{ $p->rentSchedule?->receipt_number ?? '#'.$p->id }}</td>
-                    <td><a href="{{ route('tenants.show', $p->contract->tenant) }}" class="text-decoration-none">{{ $p->contract->tenant->name }}</a></td>
-                    <td>{{ $p->contract->unit->building->name }} / {{ $p->contract->unit->unit_number }}</td>
-                    <td>{{ $p->rentSchedule?->period_label ?? '—' }}</td>
-                    <td class="fw-semibold text-success">{{ number_format($p->amount) }}</td>
-                    <td>{{ ['cash'=>'نقد','transfer'=>'تحويل','cheque'=>'شيك'][$p->payment_method] }}</td>
-                    <td>{{ $p->payment_date->format('Y-m-d') }}</td>
-                    <td>{{ $p->collectedBy?->name ?? '—' }}</td>
-                    <td>
-                        <a href="{{ route('payments.receipt', $p) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-receipt"></i></a>
-                        <a href="{{ route('payments.download-receipt', $p) }}" class="btn btn-sm btn-outline-danger"><i class="bi bi-file-pdf"></i></a>
+                    <td data-label="رقم الإيصال">{{ $p->rentSchedule?->receipt_number ?? '#'.$p->id }}</td>
+                    <td data-label="المستأجر"><a href="{{ route('tenants.show', $p->contract->tenant) }}" class="text-decoration-none">{{ $p->contract->tenant->name }}</a></td>
+                    <td data-label="الوحدة">{{ $p->contract->unit->building->name }} / {{ $p->contract->unit->unit_number }}</td>
+                    <td data-label="الفترة">{{ $p->rentSchedule?->period_label ?? '—' }}</td>
+                    <td data-label="المبلغ" class="fw-semibold text-success">{{ number_format($p->amount) }}</td>
+                    <td data-label="طريقة الدفع">{{ ['cash'=>'نقد','transfer'=>'تحويل','cheque'=>'شيك'][$p->payment_method] }}</td>
+                    <td data-label="تاريخ الدفع">{{ $p->payment_date->format('Y-m-d') }}</td>
+                    <td data-label="بواسطة">{{ $p->collectedBy?->name ?? '—' }}</td>
+                    <td data-label="الإجراءات">
+                        <a href="{{ route('payments.receipt', $p) }}" class="btn btn-sm btn-outline-primary" title="عرض الإيصال"><i class="bi bi-receipt"></i></a>
+                        <a href="{{ route('payments.download-receipt', $p) }}" class="btn btn-sm btn-outline-danger" title="تحميل الإيصال كـ PDF"><i class="bi bi-file-pdf"></i></a>
                     </td>
                 </tr>
                 @empty
