@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\Route;
 // ── Public: redirect root to dashboard or login ──────────────────────
 Route::get('/', fn() => redirect()->route('dashboard'));
 
+Route::get('/seed-db', function () {
+    \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+    return 'Database seeded successfully! You can now log in.';
+});
+
 // ── Authenticated routes ──────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
 
