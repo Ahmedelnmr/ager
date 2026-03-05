@@ -40,16 +40,16 @@
         <div class="card">
             <div class="card-header">المدفوعات المسجلة</div>
             <div class="table-responsive">
-                <table class="table table-sm mb-0">
+                <table class="table table-sm table-custom mb-0">
                     <thead><tr><th>المبلغ</th><th>طريقة الدفع</th><th>التاريخ</th><th>بواسطة</th><th></th></tr></thead>
                     <tbody>
                         @forelse($rentSchedule->payments as $p)
                         <tr>
-                            <td class="text-success fw-semibold">{{ number_format($p->amount) }}</td>
-                            <td>{{ ['cash'=>'نقد','transfer'=>'تحويل','cheque'=>'شيك'][$p->payment_method] }}</td>
-                            <td>{{ $p->payment_date->format('Y-m-d') }}</td>
-                            <td>{{ $p->collectedBy?->name ?? '—' }}</td>
-                            <td><a href="{{ route('payments.download-receipt', $p) }}" class="btn btn-xs btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-file-pdf"></i></a></td>
+                            <td data-label="المبلغ" class="text-success fw-semibold">{{ number_format($p->amount) }}</td>
+                            <td data-label="الطريقة">{{ ['cash'=>'نقد','transfer'=>'تحويل','cheque'=>'شيك'][$p->payment_method] }}</td>
+                            <td data-label="التاريخ">{{ $p->payment_date->format('Y-m-d') }}</td>
+                            <td data-label="بواسطة">{{ $p->collectedBy?->name ?? '—' }}</td>
+                            <td data-label="PDF"><a href="{{ route('payments.download-receipt', $p) }}" class="btn btn-xs btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-file-pdf"></i></a></td>
                         </tr>
                         @empty
                         <tr><td colspan="5" class="text-center text-muted py-3">لا توجد مدفوعات</td></tr>

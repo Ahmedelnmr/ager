@@ -31,17 +31,17 @@
         <div class="card mb-3">
             <div class="card-header">سجل العقود</div>
             <div class="table-responsive">
-                <table class="table table-sm mb-0">
+                <table class="table table-sm table-custom mb-0">
                     <thead><tr><th>#</th><th>المستأجر</th><th>من</th><th>إلى</th><th>الحالة</th><th></th></tr></thead>
                     <tbody>
                         @forelse($unit->contracts as $c)
                         <tr>
-                            <td>{{ $c->id }}</td>
-                            <td>{{ $c->tenant->name }}</td>
-                            <td>{{ $c->start_date->format('Y-m-d') }}</td>
-                            <td>{{ $c->end_date->format('Y-m-d') }}</td>
-                            <td><span class="badge badge-{{ $c->status }} px-2 rounded-pill">{{ ['active'=>'نشط','expired'=>'منتهي','terminated'=>'مُنهى'][$c->status] }}</span></td>
-                            <td><a href="{{ route('contracts.show', $c) }}" class="btn btn-xs btn-outline-primary btn-sm"><i class="bi bi-eye"></i></a></td>
+                            <td data-label="#">{{ $c->id }}</td>
+                            <td data-label="المستأجر">{{ $c->tenant->name }}</td>
+                            <td data-label="من">{{ $c->start_date->format('Y-m-d') }}</td>
+                            <td data-label="إلى">{{ $c->end_date->format('Y-m-d') }}</td>
+                            <td data-label="الحالة"><span class="badge badge-{{ $c->status }} px-2 rounded-pill">{{ ['active'=>'نشط','expired'=>'منتهي','terminated'=>'مُنهى'][$c->status] }}</span></td>
+                            <td data-label="عرض"><a href="{{ route('contracts.show', $c) }}" class="btn btn-xs btn-outline-primary btn-sm"><i class="bi bi-eye"></i></a></td>
                         </tr>
                         @empty
                         <tr><td colspan="6" class="text-center text-muted py-2">لا توجد عقود</td></tr>
@@ -53,14 +53,14 @@
         <div class="card">
             <div class="card-header">طلبات الصيانة</div>
             <div class="table-responsive">
-                <table class="table table-sm mb-0">
+                <table class="table table-sm table-custom mb-0">
                     <thead><tr><th>الوصف</th><th>الحالة</th><th>التاريخ</th></tr></thead>
                     <tbody>
                         @forelse($unit->maintenanceRequests as $m)
                         <tr>
-                            <td>{{ Str::limit($m->description, 50) }}</td>
-                            <td><span class="badge badge-{{ $m->status }} px-2">{{ ['pending'=>'معلق','in_progress'=>'جاري','completed'=>'مكتمل','cancelled'=>'ملغي'][$m->status] }}</span></td>
-                            <td>{{ $m->created_at->format('Y-m-d') }}</td>
+                            <td data-label="الوصف">{{ Str::limit($m->description, 50) }}</td>
+                            <td data-label="الحالة"><span class="badge badge-{{ $m->status }} px-2">{{ ['pending'=>'معلق','in_progress'=>'جاري','completed'=>'مكتمل','cancelled'=>'ملغي'][$m->status] }}</span></td>
+                            <td data-label="التاريخ">{{ $m->created_at->format('Y-m-d') }}</td>
                         </tr>
                         @empty
                         <tr><td colspan="3" class="text-center text-muted py-2">لا توجد طلبات</td></tr>
