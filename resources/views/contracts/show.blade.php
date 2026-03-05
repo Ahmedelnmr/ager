@@ -56,20 +56,20 @@
         <span class="badge bg-secondary">{{ $contract->rentSchedules->count() }} استحقاق</span>
     </div>
     <div class="table-responsive">
-        <table class="table table-sm table-hover mb-0">
+        <table class="table table-sm table-hover table-custom mb-0">
             <thead class="table-light"><tr><th>الفترة</th><th>تاريخ الاستحقاق</th><th>المبلغ الأساسي</th><th>الغرامة</th><th>الخصم</th><th>الإجمالي</th><th>المدفوع</th><th>الحالة</th><th></th></tr></thead>
             <tbody>
                 @foreach($contract->rentSchedules as $s)
                 <tr>
-                    <td>{{ $s->period_label }}</td>
-                    <td>{{ $s->due_date->format('Y-m-d') }}</td>
-                    <td>{{ number_format($s->base_amount) }}</td>
-                    <td class="{{ $s->penalty_amount > 0 ? 'text-danger' : '' }}">{{ number_format($s->penalty_amount) }}</td>
-                    <td>{{ number_format($s->discount_amount) }}</td>
-                    <td class="fw-semibold">{{ number_format($s->final_amount) }}</td>
-                    <td class="{{ $s->paid_amount < $s->final_amount ? 'text-warning' : 'text-success' }}">{{ number_format($s->paid_amount) }}</td>
-                    <td><span class="badge badge-{{ $s->status }} px-2 rounded-pill">{{ ['due'=>'مستحق','paid'=>'مدفوع','partial'=>'جزئي','overdue'=>'متأخر'][$s->status] }}</span></td>
-                    <td>
+                    <td data-label="الفترة">{{ $s->period_label }}</td>
+                    <td data-label="الاستحقاق">{{ $s->due_date->format('Y-m-d') }}</td>
+                    <td data-label="المبلغ">{{ number_format($s->base_amount) }}</td>
+                    <td data-label="الغرامة" class="{{ $s->penalty_amount > 0 ? 'text-danger' : '' }}">{{ number_format($s->penalty_amount) }}</td>
+                    <td data-label="الخصم">{{ number_format($s->discount_amount) }}</td>
+                    <td data-label="الإجمالي" class="fw-semibold">{{ number_format($s->final_amount) }}</td>
+                    <td data-label="المدفوع" class="{{ $s->paid_amount < $s->final_amount ? 'text-warning' : 'text-success' }}">{{ number_format($s->paid_amount) }}</td>
+                    <td data-label="الحالة"><span class="badge badge-{{ $s->status }} px-2 rounded-pill">{{ ['due'=>'مستحق','paid'=>'مدفوع','partial'=>'جزئي','overdue'=>'متأخر'][$s->status] }}</span></td>
+                    <td data-label="الإجراءات">
                         @if($s->status !== 'paid')
                         <a href="{{ route('payments.create', $s) }}" class="btn btn-xs btn-sm btn-success py-0 px-2" title="تسجيل دفعة">
                             <i class="bi bi-cash me-1"></i>دفع
@@ -88,18 +88,18 @@
 <div class="card">
     <div class="card-header"><i class="bi bi-cash-coin me-2"></i>المدفوعات المسجلة</div>
     <div class="table-responsive">
-        <table class="table table-sm mb-0">
+        <table class="table table-sm table-custom mb-0">
             <thead class="table-light"><tr><th>رقم الإيصال</th><th>الفترة</th><th>المبلغ</th><th>طريقة الدفع</th><th>تاريخ الدفع</th><th>بواسطة</th><th></th></tr></thead>
             <tbody>
                 @forelse($contract->payments as $p)
                 <tr>
-                    <td>{{ $p->rentSchedule?->receipt_number ?? '#' . $p->id }}</td>
-                    <td>{{ $p->rentSchedule?->period_label ?? '—' }}</td>
-                    <td class="fw-semibold text-success">{{ number_format($p->amount) }}</td>
-                    <td>{{ ['cash'=>'نقد','transfer'=>'تحويل','cheque'=>'شيك'][$p->payment_method] }}</td>
-                    <td>{{ $p->payment_date->format('Y-m-d') }}</td>
-                    <td>{{ $p->collectedBy?->name ?? '—' }}</td>
-                    <td><a href="{{ route('payments.download-receipt', $p) }}" class="btn btn-xs btn-sm btn-outline-secondary py-0 px-2"><i class="bi bi-file-pdf"></i></a></td>
+                    <td data-label="الإيصال">{{ $p->rentSchedule?->receipt_number ?? '#' . $p->id }}</td>
+                    <td data-label="الفترة">{{ $p->rentSchedule?->period_label ?? '—' }}</td>
+                    <td data-label="المبلغ" class="fw-semibold text-success">{{ number_format($p->amount) }}</td>
+                    <td data-label="طريقة الدفع">{{ ['cash'=>'نقد','transfer'=>'تحويل','cheque'=>'شيك'][$p->payment_method] }}</td>
+                    <td data-label="التاريخ">{{ $p->payment_date->format('Y-m-d') }}</td>
+                    <td data-label="بواسطة">{{ $p->collectedBy?->name ?? '—' }}</td>
+                    <td data-label="PDF"><a href="{{ route('payments.download-receipt', $p) }}" class="btn btn-xs btn-sm btn-outline-secondary py-0 px-2"><i class="bi bi-file-pdf"></i></a></td>
                 </tr>
                 @empty
                 <tr><td colspan="7" class="text-center text-muted py-3">لا توجد مدفوعات</td></tr>
