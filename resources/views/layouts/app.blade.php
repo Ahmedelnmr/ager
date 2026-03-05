@@ -172,6 +172,47 @@
             /* Fix Buttons spilling over */
             .btn { white-space: nowrap; }
             .btn-sm { font-size: 0.8rem; }
+
+            /* ===== TABLE → CARD CONVERSION ON MOBILE ===== */
+            .table-custom { white-space: normal !important; }
+            .table-custom, .table-custom tbody, .table-custom tr, .table-custom td {
+                display: block !important; width: 100% !important;
+            }
+            .table-custom thead { display: none !important; }
+            .table-custom tr {
+                margin-bottom: 1rem;
+                background-color: #fff;
+                border: 1px solid rgba(0,0,0,.08);
+                border-radius: 10px;
+                padding: 0.5rem;
+                box-shadow: 0 2px 8px rgba(0,0,0,.04);
+            }
+            .table-custom td {
+                text-align: right;
+                padding: 0.5rem 0.75rem !important;
+                border-bottom: 1px dotted #eee;
+                display: flex !important;
+                justify-content: space-between;
+                align-items: center;
+                word-break: break-word;
+            }
+            .table-custom td:last-child {
+                border-bottom: 0;
+                justify-content: center;
+                gap: 0.5rem;
+                padding-top: 0.8rem !important;
+            }
+            .table-custom td::before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: var(--primary);
+                font-size: 0.85rem;
+                margin-left: 1rem;
+                white-space: nowrap;
+            }
+            .table-custom td .btn { margin-bottom: 0 !important; }
+            .table-responsive { overflow-x: hidden !important; }
+            /* ===== END TABLE → CARD ===== */
         }
     </style>
     @stack('styles')
