@@ -116,7 +116,7 @@
         }
 
         .page-content { padding: 1.5rem; }
-        .card { border-radius: 14px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,.07); }
+        .card { border-radius: 14px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
         .card-header { background: transparent; border-bottom: 1px solid #e9ecef; font-weight: 700; padding: 1rem 1.25rem; }
 
         @keyframes fadeInUp {
@@ -125,23 +125,41 @@
         }
         .fade-in { animation: fadeInUp .3s ease; }
 
+        /* General Mobile Fixes */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
         @media (max-width: 768px) {
+            body { position: relative; width: 100%; overflow-x: hidden !important; }
             #sidebar { transform: translateX(260px); transition: transform .3s; }
             #sidebar.open { transform: translateX(0); }
-            #main { margin-right: 0; }
+            #main { margin-right: 0; width: 100%; max-width: 100vw; overflow-x: hidden; }
             
-            #topbar { padding: 0 0.8rem; }
-            .page-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
-            .page-content { padding: 1rem 0.5rem; }
+            #topbar { padding: 0 0.8rem; flex-wrap: nowrap; }
+            .page-title { font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+            
+            .page-content { padding: 0.75rem; width: 100%; overflow-x: hidden; }
+            
+            /* Card Fixes */
+            .card { width: 100%; margin-left: 0; margin-right: 0; border-radius: 10px; }
+            .card-body { padding: 0.8rem; }
             .card-header { padding: 0.75rem 1rem; }
+            
+            /* Fix Forms and Filters spreading too wide */
+            .form-select, .form-control { font-size: 0.85rem; padding: 0.4rem 0.6rem; }
+            .row { margin-left: -0.5rem; margin-right: -0.5rem; }
+            .col-12, .col-md-3, .col-md-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
             
             /* Notification Dropdown Mobile Fix */
             .notif-dropdown-menu { width: 92vw !important; max-width: 360px !important; left: -60px !important; right: auto !important; }
             .dropdown-menu-start { left: 0 !important; right: auto !important; }
             
             /* Optimize Action Buttons in Tables */
-            .table-custom td .btn { padding: 0.25rem 0.4rem; font-size: 0.75rem; }
+            .table-custom td .btn { padding: 0.25rem 0.4rem; font-size: 0.75rem; margin-bottom: 2px; }
             .icon-box { width: 48px; height: 48px; font-size: 1.25rem; }
+
+            /* Fix Buttons spilling over */
+            .btn { white-space: nowrap; }
+            .btn-sm { font-size: 0.8rem; }
         }
     </style>
     @stack('styles')
