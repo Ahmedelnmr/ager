@@ -23,6 +23,7 @@
             --bg-main:       #f0f4f8;
         }
         * { font-family: 'Cairo', sans-serif; }
+        html, body { overflow-x: hidden; max-width: 100%; }
         body { background: var(--bg-main); min-height: 100vh; }
 
         /* Sidebar */
